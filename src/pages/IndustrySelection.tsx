@@ -97,11 +97,8 @@ const IndustrySelection = () => {
                   </div>
                 )}
                 <CardContent className="p-8 text-center">
-                  <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-7xl mb-6 group-hover:scale-110 transition-transform duration-300">
                     {industry.illustration}
-                  </div>
-                  <div className={`w-12 h-12 rounded-full ${industry.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-bold text-foreground mb-2">{industry.name}</h3>
                   <p className="text-muted-foreground font-medium">{industry.tagline}</p>

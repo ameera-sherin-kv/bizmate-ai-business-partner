@@ -119,25 +119,25 @@ const Discovery = () => {
           <Progress value={progress} className="h-3 bg-muted" />
         </div>
 
-        <div className="space-y-6 mb-8 max-h-[60vh] overflow-y-auto pr-2">
+        <div className="space-y-8 mb-8 max-h-[60vh] overflow-y-auto pr-2">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.isAI ? "justify-start" : "justify-end"} animate-fade-in`}
             >
               <div
-                className={`flex items-start space-x-4 max-w-[85%] ${
+                className={`flex items-end space-x-4 max-w-[85%] ${
                   message.isAI ? "flex-row" : "flex-row-reverse space-x-reverse"
                 }`}
               >
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${
+                  className={`w-12 h-12 rounded-full flex items-center justify-center shadow-card flex-shrink-0 ${
                     message.isAI 
                       ? "bg-gradient-primary text-primary-foreground" 
                       : "bg-secondary text-secondary-foreground"
                   }`}
                 >
-                  {message.isAI ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                  {message.isAI ? <Bot className="w-6 h-6" /> : <User className="w-6 h-6" />}
                 </div>
                 <Card
                   className={`shadow-card transition-all duration-300 ${
@@ -146,9 +146,9 @@ const Discovery = () => {
                       : "bg-background text-foreground border-border hover:shadow-card"
                   }`}
                 >
-                  <CardContent className="p-5">
+                  <CardContent className="p-6">
                     {message.isTyping ? (
-                      <div className="flex space-x-1">
+                      <div className="flex space-x-2">
                         <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse"></div>
                         <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
                         <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
