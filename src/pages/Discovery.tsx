@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ interface Message {
   text: string;
   isAI: boolean;
   isTyping?: boolean;
+  options?: string[];
+  suggestions?: { type: string; items: string[] };
 }
 
 interface BusinessPlan {
@@ -38,14 +40,42 @@ interface BusinessPlan {
   forecast: string;
 }
 
-const questions = [
-  "What is your business idea? Describe it in detail.",
-  "What's your starting budget for this business?",
-  "Who is your target customer? Describe them in detail.",
-  "How do you plan to sell your products/services?",
-  "What experience do you have in this industry?",
-  "What are your main revenue streams?",
-  "What's your biggest concern about starting this business?",
+const conversationFlow = [
+  {
+    question: "Welcome! Let's start by setting up your business. What's your business name?",
+    type: "text",
+    field: "title"
+  },
+  {
+    question: "Who are you selling to?",
+    type: "options",
+    options: ["Professionals", "Students", "Homemakers", "Premium buyers", "Budget-conscious consumers"],
+    field: "targetAudience"
+  },
+  {
+    question: "What makes your business stand out?",
+    type: "options",
+    options: ["Sustainable & eco-friendly 🌱", "Trendy & modern ✨", "Affordable everyday wear 💸", "Handcrafted / artisanal 🧵", "High-quality materials"],
+    field: "businessModel"
+  },
+  {
+    question: "How do you want your brand to feel?",
+    type: "options", 
+    options: ["Premium 🌟", "Everyday comfort 🌿", "Cultural heritage 🎨", "Youthful & trendy 🎉", "Professional & reliable"],
+    field: "branding"
+  },
+  {
+    question: "What's your starting budget for this business?",
+    type: "options",
+    options: ["Under $1,000", "$1,000 - $5,000", "$5,000 - $20,000", "$20,000 - $50,000", "Over $50,000"],
+    field: "startupCosts"
+  },
+  {
+    question: "How do you plan to sell your products/services?",
+    type: "options",
+    options: ["Online store", "Physical store", "Social media", "Marketplaces (Amazon, Etsy)", "Direct sales"],
+    field: "sales"
+  }
 ];
 
 const planSections = [
@@ -65,6 +95,8 @@ const Discovery = () => {
   const [currentInput, setCurrentInput] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [openAccordions, setOpenAccordions] = useState<string[]>([]);
   const [businessPlan, setBusinessPlan] = useState<BusinessPlan>({
     title: "",
     tagline: "",
@@ -89,18 +121,33 @@ const Discovery = () => {
     forecast: "",
   });
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     if (!isStarted) {
       const timer = setTimeout(() => {
-        setMessages(prev => [...prev, { id: 2, text: questions[0], isAI: true }]);
+        const firstQuestion = conversationFlow[0];
+        setMessages(prev => [...prev, { 
+          id: 2, 
+          text: firstQuestion.question, 
+          isAI: true,
+          options: firstQuestion.options
+        }]);
         setIsStarted(true);
       }, 1500);
       return () => clearTimeout(timer);
     }
   }, [isStarted]);
 
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const progress = ((currentQuestionIndex + 1) / conversationFlow.length) * 100;
   const completedSections = planSections.filter(section => 
     section.fields.some(field => businessPlan[field as keyof BusinessPlan])
   ).length;
@@ -120,60 +167,96 @@ const Discovery = () => {
     setMessages(prev => prev.filter(msg => msg.id !== id));
   };
 
+  const generateSuggestions = (userResponse: string, questionIndex: number) => {
+    // Generate AI suggestions based on user response
+    if (questionIndex === 0) { // Business name
+      const taglines = [
+        "Everyday Elegance",
+        "Comfort Meets Style",
+        "Timeless Quality",
+      ];
+      const visions = [
+        `Redefining everyday wear with ${userResponse.toLowerCase()}'s unique style.`,
+        `Empowering customers with high-quality, stylish solutions.`,
+        `Blending tradition with modernity for exceptional experiences.`,
+      ];
+      return { taglines, visions };
+    }
+    return null;
+  };
+
   const updateBusinessPlan = (userResponse: string, questionIndex: number) => {
     setBusinessPlan(prev => {
       const updated = { ...prev };
+      const currentQuestion = conversationFlow[questionIndex];
       
-      // Simple mapping based on question index
-      switch (questionIndex) {
-        case 0: // Business idea
-          updated.title = userResponse.split(' ').slice(0, 3).join(' ') + " Business";
-          updated.vision = userResponse;
-          updated.products = userResponse;
+      // Update based on the field mapping
+      switch (currentQuestion.field) {
+        case "title":
+          updated.title = userResponse;
+          updated.products = `${userResponse} products and services`;
           break;
-        case 1: // Budget
-          updated.startupCosts = userResponse;
-          updated.forecast = `Based on ${userResponse} budget`;
-          break;
-        case 2: // Target customer
+        case "targetAudience":
           updated.targetAudience = userResponse;
-          updated.marketing = `Target ${userResponse}`;
+          updated.marketing = `Marketing strategy focused on ${userResponse}`;
           break;
-        case 3: // Sales plan
-          updated.sales = userResponse;
+        case "businessModel":
           updated.businessModel = userResponse;
+          updated.mission = `Delivering ${userResponse.toLowerCase()} solutions`;
           break;
-        case 4: // Experience
-          updated.founders = userResponse;
-          updated.team = userResponse;
+        case "branding":
+          updated.branding = userResponse;
           break;
-        case 5: // Revenue streams
-          updated.revenueStreams = userResponse;
+        case "startupCosts":
+          updated.startupCosts = userResponse;
+          updated.forecast = `Financial planning based on ${userResponse} initial investment`;
           break;
-        case 6: // Concerns
-          updated.mission = `Address concerns about ${userResponse}`;
+        case "sales":
+          updated.sales = userResponse;
           break;
       }
       
       return updated;
     });
+
+    // Auto-expand relevant sections
+    const sectionToExpand = planSections.find(section => 
+      section.fields.includes(conversationFlow[questionIndex].field)
+    );
+    if (sectionToExpand && !openAccordions.includes(sectionToExpand.id)) {
+      setOpenAccordions(prev => [...prev, sectionToExpand.id]);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentInput.trim()) return;
+  const handleOptionSelect = (option: string) => {
+    setCurrentInput(option);
+    handleSubmit(null, option);
+  };
+
+  const handleSuggestionSelect = (suggestion: string, type: string) => {
+    setBusinessPlan(prev => ({
+      ...prev,
+      [type]: suggestion
+    }));
+    setShowSuggestions(false);
+  };
+
+  const handleSubmit = (e?: React.FormEvent | null, optionValue?: string) => {
+    if (e) e.preventDefault();
+    const inputValue = optionValue || currentInput;
+    if (!inputValue.trim()) return;
 
     // Add user message
     const userMessage: Message = {
       id: messages.length + 1,
-      text: currentInput,
+      text: inputValue,
       isAI: false,
     };
 
     setMessages(prev => [...prev, userMessage]);
     
     // Update business plan
-    updateBusinessPlan(currentInput, currentQuestionIndex);
+    updateBusinessPlan(inputValue, currentQuestionIndex);
     
     setCurrentInput("");
 
@@ -184,11 +267,42 @@ const Discovery = () => {
     setTimeout(() => {
       removeTypingMessage(typingId);
       
-      if (currentQuestionIndex < questions.length - 1) {
+      if (currentQuestionIndex < conversationFlow.length - 1) {
+        const nextQuestionData = conversationFlow[currentQuestionIndex + 1];
+        
+        // Check if we should show suggestions first
+        if (currentQuestionIndex === 0) { // After business name
+          const suggestions = generateSuggestions(inputValue, currentQuestionIndex);
+          if (suggestions) {
+            const suggestionMessage: Message = {
+              id: messages.length + 3,
+              text: "Based on your business name, here are some suggestions:",
+              isAI: true,
+              suggestions: { type: "taglines", items: suggestions.taglines }
+            };
+            setMessages(prev => [...prev, suggestionMessage]);
+            setShowSuggestions(true);
+            
+            // Then ask next question
+            setTimeout(() => {
+              const nextQuestion: Message = {
+                id: messages.length + 4,
+                text: nextQuestionData.question,
+                isAI: true,
+                options: nextQuestionData.options
+              };
+              setMessages(prev => [...prev, nextQuestion]);
+              setCurrentQuestionIndex(prev => prev + 1);
+            }, 2000);
+            return;
+          }
+        }
+        
         const nextQuestion: Message = {
           id: messages.length + 3,
-          text: questions[currentQuestionIndex + 1],
+          text: nextQuestionData.question,
           isAI: true,
+          options: nextQuestionData.options
         };
         setMessages(prev => [...prev, nextQuestion]);
         setCurrentQuestionIndex(prev => prev + 1);
@@ -207,12 +321,10 @@ const Discovery = () => {
   };
 
   const handleExportPDF = () => {
-    // Placeholder for PDF export
     alert("PDF export feature coming soon!");
   };
 
   const handleSaveDraft = () => {
-    // Placeholder for save draft
     alert("Draft saved successfully!");
   };
 
@@ -262,58 +374,97 @@ const Discovery = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">AI Chat</h2>
               <div className="text-sm text-muted-foreground bg-muted rounded-full px-3 py-1">
-                Question {Math.min(currentQuestionIndex + 1, questions.length)} of {questions.length}
+                Question {Math.min(currentQuestionIndex + 1, conversationFlow.length)} of {conversationFlow.length}
               </div>
             </div>
           </div>
 
           <div className="flex-1 px-6 pb-6 overflow-y-auto space-y-6">
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.isAI ? "justify-start" : "justify-end"} animate-fade-in`}
-              >
+              <div key={message.id}>
                 <div
-                  className={`flex items-end space-x-3 max-w-[85%] ${
-                    message.isAI ? "flex-row" : "flex-row-reverse space-x-reverse"
-                  }`}
+                  className={`flex ${message.isAI ? "justify-start" : "justify-end"} animate-fade-in`}
                 >
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 ${
-                      message.isAI 
-                        ? "bg-gradient-primary text-primary-foreground" 
-                        : "bg-secondary text-secondary-foreground"
+                    className={`flex items-start space-x-3 max-w-[85%] ${
+                      message.isAI ? "flex-row" : "flex-row-reverse space-x-reverse"
                     }`}
                   >
-                    {message.isAI ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 ${
+                        message.isAI 
+                          ? "bg-gradient-primary text-primary-foreground" 
+                          : "bg-secondary text-secondary-foreground"
+                      }`}
+                    >
+                      {message.isAI ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                    </div>
+                    <Card
+                      className={`shadow-sm transition-all duration-300 ${
+                        message.isAI
+                          ? "bg-gradient-primary text-primary-foreground border-primary/20"
+                          : "bg-background text-foreground border-border"
+                      }`}
+                    >
+                      <CardContent className="p-4">
+                        {message.isTyping ? (
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse"></div>
+                            <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                            <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                          </div>
+                        ) : (
+                          <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
-                  <Card
-                    className={`shadow-sm transition-all duration-300 ${
-                      message.isAI
-                        ? "bg-gradient-primary text-primary-foreground border-primary/20"
-                        : "bg-background text-foreground border-border"
-                    }`}
-                  >
-                    <CardContent className="p-4">
-                      {message.isTyping ? (
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse"></div>
-                          <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                          <div className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                        </div>
-                      ) : (
-                        <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
-                      )}
-                    </CardContent>
-                  </Card>
                 </div>
+
+                {/* Options */}
+                {message.options && message.isAI && (
+                  <div className="flex flex-wrap gap-2 mt-3 ml-11">
+                    {message.options.map((option, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOptionSelect(option)}
+                        className="text-xs hover:bg-primary hover:text-primary-foreground"
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Suggestions */}
+                {message.suggestions && message.isAI && (
+                  <div className="mt-3 ml-11 space-y-2">
+                    <p className="text-sm text-muted-foreground">Tagline suggestions:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {message.suggestions.items.map((suggestion, index) => (
+                        <Button
+                          key={index}
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleSuggestionSelect(suggestion, "tagline")}
+                          className="text-xs"
+                        >
+                          {suggestion}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Chat Input */}
-          {currentQuestionIndex < questions.length && (
-            <div className="p-6 border-t border-border bg-background/50">
+          {currentQuestionIndex < conversationFlow.length && (
+            <div className="p-6 border-t border-border bg-background/50 sticky bottom-0">
               <form onSubmit={handleSubmit} className="flex space-x-3">
                 <div className="flex-1">
                   <Input
@@ -347,7 +498,7 @@ const Discovery = () => {
           </div>
 
           <div className="flex-1 p-6 overflow-y-auto">
-            <Accordion type="multiple" className="space-y-4">
+            <Accordion type="multiple" value={openAccordions} onValueChange={setOpenAccordions} className="space-y-4">
               {planSections.map((section) => {
                 const hasContent = section.fields.some(field => businessPlan[field as keyof BusinessPlan]);
                 const IconComponent = section.icon;
