@@ -1,22 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Brain, 
-  TrendingUp, 
-  FileText, 
-  Shield, 
-  Zap, 
-  Target, 
-  Star,
-  ArrowRight,
-  CheckCircle,
-  Play,
-  Users,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight
-} from "lucide-react";
+import { Brain, TrendingUp, FileText, Shield, Zap, Target, Star, ArrowRight, CheckCircle, Play, Users, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import bizmateLogo from "@/assets/bizmate-logo.png";
 import heroIllustration from "@/assets/hero-illustration.jpg";
 import flowingBg from "@/assets/flowing-bg.jpg";
@@ -24,7 +9,6 @@ import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnim
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-
 const Landing = () => {
   const heroAnimation = useScrollAnimation();
   const valuePropsAnimation = useStaggeredAnimation(4, 300);
@@ -32,30 +16,26 @@ const Landing = () => {
   const testimonialsAnimation = useStaggeredAnimation(3, 250);
 
   // Carousel setup
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    { 
-      loop: true,
-      align: 'start',
-      skipSnaps: false,
-      dragFree: false
-    },
-    [Autoplay({ delay: 4000, stopOnInteraction: false })]
-  );
-
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: 'start',
+    skipSnaps: false,
+    dragFree: false
+  }, [Autoplay({
+    delay: 4000,
+    stopOnInteraction: false
+  })]);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setCanScrollPrev(emblaApi.canScrollPrev());
     setCanScrollNext(emblaApi.canScrollNext());
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
-
   useEffect(() => {
     if (!emblaApi) return;
     onSelect();
@@ -63,99 +43,91 @@ const Landing = () => {
   }, [emblaApi, onSelect]);
 
   // All carousel cards data
-  const carouselCards = [
-    {
-      type: "health",
-      score: "82/100",
-      title: "Business Health Score",
-      status: "bg-green-100 text-green-800",
-      items: [
-        { icon: CheckCircle, text: "Revenue trending up 15%", color: "text-green-500" },
-        { icon: TrendingUp, text: "Customer acquisition improving", color: "text-primary" },
-        { icon: Zap, text: "Marketing ROI: 3.2x", color: "text-accent" }
-      ],
-      recommendation: "Consider expanding to sustainable home goods - 67% market opportunity match."
-    },
-    {
-      type: "roadmap",
-      industry: "E-commerce",
-      title: "Personalized Roadmap",
-      phase: "Growth Strategy",
-      items: [
-        "Market expansion analysis",
-        "Customer segmentation", 
-        "Revenue optimization",
-        "Competitive positioning"
-      ]
-    },
-    {
-      type: "bizdocs",
-      title: "Smart BizDocs",
-      docType: "Investor Pitch Deck",
-      pages: "12 slides",
-      sections: ["Problem & Solution", "Market Opportunity", "Business Model", "Financial Projections"]
-    },
-    {
-      type: "insights",
-      title: "Smart Insights",
-      insightType: "Market Opportunity",
-      confidence: "92%",
-      insight: "Sustainable packaging market growing 23% annually in your region.",
-      action: "Consider eco-friendly product line"
-    },
-    {
-      type: "health",
-      score: "76/100",
-      title: "Operational Efficiency",
-      status: "bg-blue-100 text-blue-800",
-      items: [
-        { icon: CheckCircle, text: "Inventory turnover up 22%", color: "text-green-500" },
-        { icon: Target, text: "Production efficiency 89%", color: "text-primary" },
-        { icon: Zap, text: "Supply chain optimized", color: "text-accent" }
-      ],
-      recommendation: "Automate customer service to reduce response time by 40%."
-    },
-    {
-      type: "roadmap",
-      industry: "SaaS",
-      title: "Personalized Roadmap",
-      phase: "Product-Market Fit",
-      items: [
-        "User onboarding optimization",
-        "Feature prioritization",
-        "Churn reduction strategy", 
-        "Pricing model validation"
-      ]
-    },
-    {
-      type: "bizdocs",
-      title: "Smart BizDocs",
-      docType: "Business Plan",
-      pages: "25 pages",
-      sections: ["Executive Summary", "Market Analysis", "Operations Plan", "Financial Strategy"]
-    },
-    {
-      type: "insights",
-      title: "Smart Insights",
-      insightType: "Customer Behavior",
-      confidence: "87%",
-      insight: "Peak sales occur during weekend evening hours (6-9 PM).",
-      action: "Optimize ad spend timing"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+  const carouselCards = [{
+    type: "health",
+    score: "82/100",
+    title: "Business Health Score",
+    status: "bg-green-100 text-green-800",
+    items: [{
+      icon: CheckCircle,
+      text: "Revenue trending up 15%",
+      color: "text-green-500"
+    }, {
+      icon: TrendingUp,
+      text: "Customer acquisition improving",
+      color: "text-primary"
+    }, {
+      icon: Zap,
+      text: "Marketing ROI: 3.2x",
+      color: "text-accent"
+    }],
+    recommendation: "Consider expanding to sustainable home goods - 67% market opportunity match."
+  }, {
+    type: "roadmap",
+    industry: "E-commerce",
+    title: "Personalized Roadmap",
+    phase: "Growth Strategy",
+    items: ["Market expansion analysis", "Customer segmentation", "Revenue optimization", "Competitive positioning"]
+  }, {
+    type: "bizdocs",
+    title: "Smart BizDocs",
+    docType: "Investor Pitch Deck",
+    pages: "12 slides",
+    sections: ["Problem & Solution", "Market Opportunity", "Business Model", "Financial Projections"]
+  }, {
+    type: "insights",
+    title: "Smart Insights",
+    insightType: "Market Opportunity",
+    confidence: "92%",
+    insight: "Sustainable packaging market growing 23% annually in your region.",
+    action: "Consider eco-friendly product line"
+  }, {
+    type: "health",
+    score: "76/100",
+    title: "Operational Efficiency",
+    status: "bg-blue-100 text-blue-800",
+    items: [{
+      icon: CheckCircle,
+      text: "Inventory turnover up 22%",
+      color: "text-green-500"
+    }, {
+      icon: Target,
+      text: "Production efficiency 89%",
+      color: "text-primary"
+    }, {
+      icon: Zap,
+      text: "Supply chain optimized",
+      color: "text-accent"
+    }],
+    recommendation: "Automate customer service to reduce response time by 40%."
+  }, {
+    type: "roadmap",
+    industry: "SaaS",
+    title: "Personalized Roadmap",
+    phase: "Product-Market Fit",
+    items: ["User onboarding optimization", "Feature prioritization", "Churn reduction strategy", "Pricing model validation"]
+  }, {
+    type: "bizdocs",
+    title: "Smart BizDocs",
+    docType: "Business Plan",
+    pages: "25 pages",
+    sections: ["Executive Summary", "Market Analysis", "Operations Plan", "Financial Strategy"]
+  }, {
+    type: "insights",
+    title: "Smart Insights",
+    insightType: "Customer Behavior",
+    confidence: "87%",
+    insight: "Peak sales occur during weekend evening hours (6-9 PM).",
+    action: "Optimize ad spend timing"
+  }];
+  return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Flowing Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div 
-          className="absolute inset-0 opacity-5 animate-background-flow"
-          style={{
-            backgroundImage: `url(${flowingBg})`,
-            backgroundSize: '200% 100%',
-            backgroundRepeat: 'no-repeat'
-          }}
-        />
+        <div className="absolute inset-0 opacity-5 animate-background-flow" style={{
+        backgroundImage: `url(${flowingBg})`,
+        backgroundSize: '200% 100%',
+        backgroundRepeat: 'no-repeat'
+      }} />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float delay-300" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-pulse-glow" />
@@ -166,12 +138,7 @@ const Landing = () => {
         <div className="absolute inset-0 bg-gradient-hero" />
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
         <div className="container mx-auto px-4 relative z-10">
-          <div 
-            ref={heroAnimation.ref}
-            className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-1000 ${
-              heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-          >
+          <div ref={heroAnimation.ref} className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-1000 ${heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="text-center lg:text-left animate-slide-in-left">
               <Badge className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20">
                 <Sparkles className="w-4 h-4 mr-2" />
@@ -202,11 +169,7 @@ const Landing = () => {
             <div className="relative animate-slide-in-right">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-3xl transform scale-110 animate-pulse-glow" />
               <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 animate-float">
-                <img 
-                  src={heroIllustration} 
-                  alt="AI Co-founder Illustration" 
-                  className="w-full h-64 object-cover rounded-lg mb-6 shadow-glow"
-                />
+                <img src={heroIllustration} alt="AI Co-founder Illustration" className="w-full h-64 object-cover rounded-lg mb-6 shadow-glow" />
                 <div className="flex items-center gap-4 mb-6">
                   <img src={bizmateLogo} alt="BizMate.AI" className="w-12 h-12 animate-pulse-glow" />
                   <div>
@@ -241,13 +204,8 @@ const Landing = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div 
-              ref={valuePropsAnimation.ref}
-              className="space-y-8"
-            >
-              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
-                valuePropsAnimation.visibleItems[0] ? 'animate-slide-in-left' : 'opacity-0'
-              }`}>
+            <div ref={valuePropsAnimation.ref} className="space-y-8">
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${valuePropsAnimation.visibleItems[0] ? 'animate-slide-in-left' : 'opacity-0'}`}>
                 <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <Target className="w-6 h-6 text-white" />
                 </div>
@@ -257,9 +215,7 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
-                valuePropsAnimation.visibleItems[1] ? 'animate-slide-in-left' : 'opacity-0'
-              }`}>
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${valuePropsAnimation.visibleItems[1] ? 'animate-slide-in-left' : 'opacity-0'}`}>
                 <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
@@ -269,9 +225,7 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
-                valuePropsAnimation.visibleItems[2] ? 'animate-slide-in-left' : 'opacity-0'
-              }`}>
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${valuePropsAnimation.visibleItems[2] ? 'animate-slide-in-left' : 'opacity-0'}`}>
                 <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
@@ -281,9 +235,7 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
-                valuePropsAnimation.visibleItems[3] ? 'animate-slide-in-left' : 'opacity-0'
-              }`}>
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${valuePropsAnimation.visibleItems[3] ? 'animate-slide-in-left' : 'opacity-0'}`}>
                 <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <Brain className="w-6 h-6 text-white" />
                 </div>
@@ -299,22 +251,10 @@ const Landing = () => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold text-foreground">Live AI Features Demo</h3>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={scrollPrev}
-                    disabled={!canScrollPrev}
-                    className="w-8 h-8"
-                  >
+                  <Button variant="outline" size="icon" onClick={scrollPrev} disabled={!canScrollPrev} className="w-8 h-8">
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={scrollNext}
-                    disabled={!canScrollNext}
-                    className="w-8 h-8"
-                  >
+                  <Button variant="outline" size="icon" onClick={scrollNext} disabled={!canScrollNext} className="w-8 h-8">
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -323,12 +263,10 @@ const Landing = () => {
               {/* Carousel */}
               <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex gap-6 items-center">
-                  {carouselCards.map((card, index) => (
-                    <div key={index} className="flex-[0_0_100%] min-w-0">
+                  {carouselCards.map((card, index) => <div key={index} className="flex-[0_0_100%] min-w-0">
                       <div className="flex items-center justify-center min-h-[400px]">
                         <div className="bg-card rounded-2xl p-8 border shadow-card transition-all duration-500 w-full max-w-md mx-auto">
-                          {card.type === 'health' && (
-                            <div className="space-y-6">
+                          {card.type === 'health' && <div className="space-y-6">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
                                 <Badge className={card.status}>{card.score}</Badge>
@@ -336,25 +274,21 @@ const Landing = () => {
                               
                               <div className="space-y-4">
                                 {card.items.map((item, idx) => {
-                                  const IconComponent = item.icon;
-                                  return (
-                                    <div key={idx} className="flex items-center gap-3">
+                            const IconComponent = item.icon;
+                            return <div key={idx} className="flex items-center gap-3">
                                       <IconComponent className={`w-5 h-5 ${item.color}`} />
                                       <span className="text-sm text-muted-foreground">{item.text}</span>
-                                    </div>
-                                  );
-                                })}
+                                    </div>;
+                          })}
                               </div>
 
                               <div className="bg-accent/10 rounded-lg p-4 border border-accent/20">
                                 <p className="text-sm font-medium text-accent">💡 AI Recommendation</p>
                                 <p className="text-sm text-muted-foreground mt-1">{card.recommendation}</p>
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
-                          {card.type === 'roadmap' && (
-                            <div className="space-y-4">
+                          {card.type === 'roadmap' && <div className="space-y-4">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
                                 <Badge variant="outline">{card.industry}</Badge>
@@ -363,19 +297,15 @@ const Landing = () => {
                               <div>
                                 <p className="text-sm font-medium text-primary mb-2">{card.phase}</p>
                                 <div className="space-y-2">
-                                  {card.items.map((item, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
+                                  {card.items.map((item, idx) => <div key={idx} className="flex items-center gap-2">
                                       <div className="w-2 h-2 bg-primary rounded-full" />
                                       <span className="text-sm text-muted-foreground">{item}</span>
-                                    </div>
-                                  ))}
+                                    </div>)}
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
-                          {card.type === 'bizdocs' && (
-                            <div className="space-y-4">
+                          {card.type === 'bizdocs' && <div className="space-y-4">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
                                 <Badge className="bg-secondary/10 text-secondary">{card.pages}</Badge>
@@ -384,19 +314,15 @@ const Landing = () => {
                               <div>
                                 <p className="text-sm font-medium text-secondary mb-2">{card.docType}</p>
                                 <div className="space-y-2">
-                                  {card.sections.map((section, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
+                                  {card.sections.map((section, idx) => <div key={idx} className="flex items-center gap-2">
                                       <FileText className="w-3 h-3 text-secondary" />
                                       <span className="text-sm text-muted-foreground">{section}</span>
-                                    </div>
-                                  ))}
+                                    </div>)}
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            </div>}
 
-                          {card.type === 'insights' && (
-                            <div className="space-y-4">
+                          {card.type === 'insights' && <div className="space-y-4">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
                                 <Badge className="bg-accent/10 text-accent">{card.confidence}</Badge>
@@ -410,26 +336,16 @@ const Landing = () => {
                                   <p className="text-sm text-muted-foreground">{card.action}</p>
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
 
               {/* Carousel Indicators */}
               <div className="flex justify-center gap-2 mt-6">
-                {carouselCards.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      index === selectedIndex ? 'bg-primary' : 'bg-muted-foreground/20'
-                    }`}
-                    onClick={() => emblaApi?.scrollTo(index)}
-                  />
-                ))}
+                {carouselCards.map((_, index) => <button key={index} className={`w-2 h-2 rounded-full transition-colors ${index === selectedIndex ? 'bg-primary' : 'bg-muted-foreground/20'}`} onClick={() => emblaApi?.scrollTo(index)} />)}
               </div>
             </div>
           </div>
@@ -448,13 +364,8 @@ const Landing = () => {
             </p>
           </div>
 
-          <div 
-            ref={featuresAnimation.ref}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float ${
-              featuresAnimation.visibleItems[0] ? 'animate-scale-in' : 'opacity-0'
-            }`}>
+          <div ref={featuresAnimation.ref} className="grid md:grid-cols-3 gap-8">
+            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float ${featuresAnimation.visibleItems[0] ? 'animate-scale-in' : 'opacity-0'}`}>
               <CardHeader>
                 <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary animate-pulse-glow">
                   <FileText className="w-6 h-6 text-white" />
@@ -482,9 +393,7 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float delay-200 ${
-              featuresAnimation.visibleItems[1] ? 'animate-scale-in' : 'opacity-0'
-            }`}>
+            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float delay-200 ${featuresAnimation.visibleItems[1] ? 'animate-scale-in' : 'opacity-0'}`}>
               <CardHeader>
                 <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary animate-pulse-glow">
                   <TrendingUp className="w-6 h-6 text-white" />
@@ -512,9 +421,7 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float delay-400 ${
-              featuresAnimation.visibleItems[2] ? 'animate-scale-in' : 'opacity-0'
-            }`}>
+            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float delay-400 ${featuresAnimation.visibleItems[2] ? 'animate-scale-in' : 'opacity-0'}`}>
               <CardHeader>
                 <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary animate-pulse-glow">
                   <Target className="w-6 h-6 text-white" />
@@ -553,20 +460,13 @@ const Landing = () => {
               Trusted by Entrepreneurs Worldwide
             </h2>
             <div className="flex items-center justify-center gap-2 mb-8">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-6 h-6 text-yellow-500 fill-current" />
-              ))}
+              {[...Array(5)].map((_, i) => <Star key={i} className="w-6 h-6 text-yellow-500 fill-current" />)}
               <span className="ml-2 text-lg font-semibold text-muted-foreground">4.9/5 from 1,200+ founders</span>
             </div>
           </div>
 
-          <div 
-            ref={testimonialsAnimation.ref}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            <Card className={`border-primary/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float ${
-              testimonialsAnimation.visibleItems[0] ? 'animate-slide-in-left' : 'opacity-0'
-            }`}>
+          <div ref={testimonialsAnimation.ref} className="grid md:grid-cols-3 gap-8">
+            <Card className={`border-primary/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float ${testimonialsAnimation.visibleItems[0] ? 'animate-slide-in-left' : 'opacity-0'}`}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
@@ -583,9 +483,7 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className={`border-secondary/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-200 ${
-              testimonialsAnimation.visibleItems[1] ? 'animate-slide-in-left' : 'opacity-0'
-            }`}>
+            <Card className={`border-secondary/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-200 ${testimonialsAnimation.visibleItems[1] ? 'animate-slide-in-left' : 'opacity-0'}`}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
@@ -602,9 +500,7 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className={`border-accent/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-400 ${
-              testimonialsAnimation.visibleItems[2] ? 'animate-slide-in-left' : 'opacity-0'
-            }`}>
+            <Card className={`border-accent/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-400 ${testimonialsAnimation.visibleItems[2] ? 'animate-slide-in-left' : 'opacity-0'}`}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
@@ -794,14 +690,10 @@ const Landing = () => {
           </div>
           
           <div className="border-t border-border mt-12 pt-8 text-center">
-            <p className="text-muted-foreground text-sm">
-              © 2024 BizMate.AI. All rights reserved.
-            </p>
+            <p className="text-muted-foreground text-sm">© 2025 BizMate.AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
