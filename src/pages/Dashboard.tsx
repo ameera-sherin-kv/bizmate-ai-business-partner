@@ -346,123 +346,108 @@ const Dashboard = () => {
                   </DialogDescription>
                 </DialogHeader>
 
-                    <div className="mt-6 space-y-6">
-                      {/* Preview Area */}
-                      <div className="border rounded-lg p-6 bg-background/50">
-                        <h3 className="font-semibold mb-4">Document Preview</h3>
-                        <div className="space-y-4 text-sm">
-                           {template.id === 'pitch-deck' && (
-                            <>
-                              <div className="border-l-4 border-primary pl-4">
-                                <h4 className="font-medium">Slide 1: Problem + Solution</h4>
-                                <p className="text-muted-foreground">Problem: Eco-conscious consumers lack affordable, stylish textile options. Solution: WeaveNest offers everyday sustainable clothing & home fabrics at accessible prices.</p>
-                              </div>
-                              <div className="border-l-4 border-secondary pl-4">
-                                <h4 className="font-medium">Slide 2: Market Opportunity</h4>
-                                <p className="text-muted-foreground">Growing sustainable fashion demand (20% YoY). Urban middle-class & Gen Z eco-shift = ₹3,500 Cr market in India.</p>
-                              </div>
-                              <div className="border-l-4 border-accent pl-4">
-                                <h4 className="font-medium">Slide 3: Traction + Model</h4>
-                                <p className="text-muted-foreground">Products: Shirts, sarees, bedsheets. Pricing: ₹1200–₹3500. Early interest: 100+ signups on waitlist.</p>
-                              </div>
-                              <div className="border-l-4 border-primary pl-4">
-                                <h4 className="font-medium">Slide 4: Funding Ask</h4>
-                                <p className="text-muted-foreground">Asking: ₹50 lakhs for 15% equity. Goal: Scale to ₹50 lakhs in revenue by Year 2.</p>
-                              </div>
-                            </>
-                          )}
-                          {template.id === 'business-profile' && (
+                <div className="mt-6 space-y-6">
+                  {/* Preview Area */}
+                  <div className="border rounded-lg p-8 bg-background/50">
+                    <h3 className="font-semibold mb-6 text-xl">Document Preview</h3>
+                    <div className="space-y-6 text-base">
+                      {selectedTemplate?.id === 'pitch-deck' && (
+                        <>
+                          <div className="border-l-4 border-primary pl-6 py-4">
+                            <h4 className="font-semibold text-lg mb-2">Slide 1: Problem + Solution</h4>
+                            <p className="text-muted-foreground leading-relaxed">Problem: Eco-conscious consumers lack affordable, stylish textile options. Solution: WeaveNest offers everyday sustainable clothing & home fabrics at accessible prices.</p>
+                          </div>
+                          <div className="border-l-4 border-secondary pl-6 py-4">
+                            <h4 className="font-semibold text-lg mb-2">Slide 2: Market Opportunity</h4>
+                            <p className="text-muted-foreground leading-relaxed">Growing sustainable fashion demand (20% YoY). Urban middle-class & Gen Z eco-shift = ₹3,500 Cr market in India.</p>
+                          </div>
+                          <div className="border-l-4 border-accent pl-6 py-4">
+                            <h4 className="font-semibold text-lg mb-2">Slide 3: Traction + Model</h4>
+                            <p className="text-muted-foreground leading-relaxed">Products: Shirts, sarees, bedsheets. Pricing: ₹1200–₹3500. Early interest: 100+ signups on waitlist.</p>
+                          </div>
+                          <div className="border-l-4 border-primary pl-6 py-4">
+                            <h4 className="font-semibold text-lg mb-2">Slide 4: Funding Ask</h4>
+                            <p className="text-muted-foreground leading-relaxed">Asking: ₹50 lakhs for 15% equity. Goal: Scale to ₹50 lakhs in revenue by Year 2.</p>
+                          </div>
+                        </>
+                      )}
+                      {selectedTemplate?.id === 'business-profile' && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-3">
                               <div><strong>Business Name:</strong> WeaveNest</div>
                               <div><strong>Industry:</strong> Sustainable Textiles</div>
                               <div><strong>Founded By:</strong> Asha Verma & Rahul Sen</div>
                               <div><strong>Vision:</strong> To redefine affordable fashion with eco-friendly fabrics</div>
+                            </div>
+                            <div className="space-y-3">
                               <div><strong>Mission:</strong> Deliver sustainable style and everyday comfort to urban households</div>
                               <div><strong>Products:</strong> Organic cotton shirts, Linen sarees, Bamboo-fiber bedsheets</div>
                               <div><strong>Target Audience:</strong> Eco-conscious millennials & Gen Z (urban, middle-income)</div>
                               <div><strong>Business Model:</strong> Direct-to-Consumer (online) + Wholesale (eco-boutiques)</div>
                             </div>
-                          )}
-                          {template.id === 'project-proposal' && (
-                            <div className="space-y-3">
-                              <div><strong>Title:</strong> WeaveNest: Affordable Sustainable Textiles</div>
-                              <div><strong>Tagline:</strong> Sustainable Style, Everyday Comfort</div>
-                              <div><strong>Objectives:</strong></div>
-                              <ul className="list-disc list-inside text-muted-foreground ml-4">
-                                <li>Launch eco-friendly apparel and home textiles online within 6 months</li>
-                                <li>Achieve 2,500 customers in Year 1</li>
-                                <li>Generate ₹50 lakhs in revenue by Year 2</li>
-                              </ul>
-                              <div><strong>Approach:</strong></div>
-                              <ul className="list-disc list-inside text-muted-foreground ml-4">
-                                <li>Set up Shopify store with fulfillment via ShipRocket</li>
-                                <li>Leverage influencer marketing and sustainability storytelling</li>
-                                <li>Build partnerships with boutique eco-brands for B2B sales</li>
-                              </ul>
-                            </div>
-                          )}
-                          {template.id === 'investor-memo' && (
-                            <div className="space-y-3">
-                              <div><strong>Overview:</strong> WeaveNest is a D2C textile startup bringing affordable sustainable fabrics to Indian consumers.</div>
-                              <div><strong>Problem:</strong> Current eco-fashion players price products too high for middle-income households</div>
-                              <div><strong>Solution:</strong> WeaveNest offers organic cotton, linen, and bamboo-fiber textiles at affordable pricing (₹1200–₹3500)</div>
-                              <div><strong>Market:</strong> TAM: ₹3,500 Cr (India) with 20% YoY growth. SAM: ₹400 Cr affordable sustainable apparel/home textiles</div>
-                              <div><strong>Traction:</strong> Pre-launch waitlist: 100+ customers. Artisan partnerships secured in Rajasthan & Bengal</div>
-                              <div><strong>Funding Ask:</strong> ₹50 lakhs for 15% equity. Use of funds: 50% inventory, 30% marketing, 20% ops/tech</div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* AI Insight */}
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          <Sparkles className="w-5 h-5 text-primary mt-0.5" />
-                          <div>
-                            <p className="text-sm">
-                              <strong>📌 AI Insight:</strong> Based on your WeaveNest business data, we emphasized eco-friendly positioning and artisan partnerships. 
-                              Want us to focus more on financial projections instead?
-                            </p>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-3">
-                        <Button className="flex-1">
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          Generate
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2">
-                          <RefreshCw className="w-4 h-4" />
-                          Regenerate
-                          <ChevronDown className="w-4 h-4" />
-                        </Button>
-                      </div>
-
-                      {/* Export Options */}
-                      <div className="border-t pt-4">
-                        <h4 className="font-medium mb-3">Export Options</h4>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 mr-2" />
-                            PDF
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 mr-2" />
-                            PPT
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 mr-2" />
-                            Google Docs
-                          </Button>
+                      )}
+                      {selectedTemplate?.id === 'project-proposal' && (
+                        <div className="space-y-4">
+                          <div><strong>Title:</strong> WeaveNest: Affordable Sustainable Textiles</div>
+                          <div><strong>Tagline:</strong> Sustainable Style, Everyday Comfort</div>
+                          <div><strong>Objectives:</strong></div>
+                          <ul className="list-disc list-inside text-muted-foreground ml-6 space-y-2">
+                            <li>Launch eco-friendly apparel and home textiles online within 6 months</li>
+                            <li>Achieve 2,500 customers in Year 1</li>
+                            <li>Generate ₹50 lakhs in revenue by Year 2</li>
+                          </ul>
+                          <div><strong>Approach:</strong></div>
+                          <ul className="list-disc list-inside text-muted-foreground ml-6 space-y-2">
+                            <li>Set up Shopify store with fulfillment via ShipRocket</li>
+                            <li>Leverage influencer marketing and sustainability storytelling</li>
+                            <li>Build partnerships with boutique eco-brands for B2B sales</li>
+                          </ul>
                         </div>
+                      )}
+                      {selectedTemplate?.id === 'investor-memo' && (
+                        <div className="space-y-4">
+                          <div><strong>Overview:</strong> WeaveNest is a D2C textile startup bringing affordable sustainable fabrics to Indian consumers.</div>
+                          <div><strong>Problem:</strong> Current eco-fashion players price products too high for middle-income households</div>
+                          <div><strong>Solution:</strong> WeaveNest offers organic cotton, linen, and bamboo-fiber textiles at affordable pricing (₹1200–₹3500)</div>
+                          <div><strong>Market:</strong> TAM: ₹3,500 Cr (India) with 20% YoY growth. SAM: ₹400 Cr affordable sustainable apparel/home textiles</div>
+                          <div><strong>Traction:</strong> Pre-launch waitlist: 100+ customers. Artisan partnerships secured in Rajasthan & Bengal</div>
+                          <div><strong>Funding Ask:</strong> ₹50 lakhs for 15% equity. Use of funds: 50% inventory, 30% marketing, 20% ops/tech</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* AI Insight */}
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
+                    <div className="flex items-start gap-3">
+                      <Sparkles className="w-6 h-6 text-primary mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold mb-2">AI Generated Insight</h4>
+                        <p className="text-sm text-muted-foreground">
+                          This document has been tailored based on your industry selection (Textiles) and business data. 
+                          The content reflects current market trends and best practices for sustainable fashion startups.
+                        </p>
                       </div>
                     </div>
-                  </SheetContent>
-                </Sheet>
-              ))}
-            </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 pt-4">
+                    <Button className="flex-1" variant="hero">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Regenerate
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
       </div>
