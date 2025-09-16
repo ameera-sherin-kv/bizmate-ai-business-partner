@@ -9,6 +9,7 @@ import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnim
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import { cn } from "@/lib/utils";
 const Landing = () => {
   const heroAnimation = useScrollAnimation();
   const valuePropsAnimation = useStaggeredAnimation(4, 300);
@@ -58,6 +59,7 @@ const Landing = () => {
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
   const onSelect = useCallback(() => {
@@ -608,8 +610,16 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto animate-scale-in">
-            <Card className="relative border-2 border-border shadow-card hover:shadow-glow transition-all duration-500 animate-float">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Card 
+              className={cn(
+                "relative border-2 shadow-card hover:shadow-glow transition-all duration-300 cursor-pointer",
+                selectedPlan === 'free' 
+                  ? "border-primary shadow-glow scale-105" 
+                  : "border-border hover:border-primary/50"
+              )}
+              onClick={() => setSelectedPlan(selectedPlan === 'free' ? null : 'free')}
+            >
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Free</CardTitle>
                 <div className="text-4xl font-bold text-primary">$0</div>
@@ -630,11 +640,24 @@ const Landing = () => {
                     <span className="text-sm">Basic templates</span>
                   </div>
                 </div>
-                <Button className="w-full" variant="outline">Get Started Free</Button>
+                <Button 
+                  className="w-full" 
+                  variant={selectedPlan === 'free' ? 'default' : 'outline'}
+                >
+                  Get Started Free
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="relative border-2 border-primary shadow-glow scale-105 animate-pulse-glow">
+            <Card 
+              className={cn(
+                "relative border-2 shadow-glow transition-all duration-300 cursor-pointer",
+                selectedPlan === 'pro' 
+                  ? "border-primary shadow-glow scale-105" 
+                  : "border-primary hover:border-primary/80 scale-105"
+              )}
+              onClick={() => setSelectedPlan(selectedPlan === 'pro' ? null : 'pro')}
+            >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <Badge className="bg-gradient-primary text-white px-4 py-1">Most Popular</Badge>
               </div>
@@ -666,7 +689,15 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="relative border-2 border-border shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-400">
+            <Card 
+              className={cn(
+                "relative border-2 shadow-card hover:shadow-glow transition-all duration-300 cursor-pointer",
+                selectedPlan === 'enterprise' 
+                  ? "border-primary shadow-glow scale-105" 
+                  : "border-border hover:border-primary/50"
+              )}
+              onClick={() => setSelectedPlan(selectedPlan === 'enterprise' ? null : 'enterprise')}
+            >
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Enterprise</CardTitle>
                 <div className="text-4xl font-bold text-primary">Custom</div>
@@ -687,7 +718,12 @@ const Landing = () => {
                     <span className="text-sm">Advanced integrations</span>
                   </div>
                 </div>
-                <Button className="w-full" variant="outline">Contact Sales</Button>
+                <Button 
+                  className="w-full" 
+                  variant={selectedPlan === 'enterprise' ? 'default' : 'outline'}
+                >
+                  Contact Sales
+                </Button>
               </CardContent>
             </Card>
           </div>
