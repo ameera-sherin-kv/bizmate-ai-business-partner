@@ -261,7 +261,16 @@ const Landing = () => {
                         )}
                       </p>
                     </div>
-                  ))}
+                   ))}
+                </div>
+                
+                {/* Loading indicator */}
+                <div className="mt-4 flex items-center justify-center">
+                  <div className="flex items-center gap-2 text-xs text-white/60">
+                    <div className="w-1 h-1 bg-primary-glow rounded-full animate-pulse"></div>
+                    <span>Next conversation loading...</span>
+                    <div className="w-1 h-1 bg-primary-glow rounded-full animate-pulse delay-500"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -654,12 +663,14 @@ const Landing = () => {
                 "relative border-2 shadow-glow transition-all duration-300 cursor-pointer",
                 selectedPlan === 'pro' 
                   ? "border-primary shadow-glow scale-105" 
-                  : "border-primary hover:border-primary/80 scale-105"
+                  : "border-border hover:border-primary/80 hover:scale-105"
               )}
               onClick={() => setSelectedPlan(selectedPlan === 'pro' ? null : 'pro')}
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-gradient-primary text-white px-4 py-1">Most Popular</Badge>
+                <Badge className="bg-gradient-primary text-white px-4 py-1">
+                  {selectedPlan === 'pro' ? 'Selected' : 'Most Popular'}
+                </Badge>
               </div>
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Pro</CardTitle>
