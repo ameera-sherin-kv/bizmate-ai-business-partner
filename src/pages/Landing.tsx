@@ -322,11 +322,11 @@ const Landing = () => {
 
               {/* Carousel */}
               <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex gap-6">
+                <div className="flex gap-6 items-center">
                   {carouselCards.map((card, index) => (
                     <div key={index} className="flex-[0_0_100%] min-w-0">
-                      <div className="relative animate-float">
-                        <div className="bg-card rounded-2xl p-8 border shadow-card transition-all duration-500">
+                      <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="bg-card rounded-2xl p-8 border shadow-card transition-all duration-500 w-full max-w-md mx-auto">
                           {card.type === 'health' && (
                             <div className="space-y-6">
                               <div className="flex items-center justify-between">
