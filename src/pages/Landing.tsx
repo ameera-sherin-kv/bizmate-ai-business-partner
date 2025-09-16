@@ -16,16 +16,44 @@ import {
   Sparkles
 } from "lucide-react";
 import bizmateLogo from "@/assets/bizmate-logo.png";
+import heroIllustration from "@/assets/hero-illustration.jpg";
+import flowingBg from "@/assets/flowing-bg.jpg";
+import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 
 const Landing = () => {
+  const heroAnimation = useScrollAnimation();
+  const valuePropsAnimation = useStaggeredAnimation(4, 300);
+  const featuresAnimation = useStaggeredAnimation(3, 200);
+  const testimonialsAnimation = useStaggeredAnimation(3, 250);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Flowing Background Elements */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div 
+          className="absolute inset-0 opacity-5 animate-background-flow"
+          style={{
+            backgroundImage: `url(${flowingBg})`,
+            backgroundSize: '200% 100%',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float delay-300" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-pulse-glow" />
+      </div>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-hero min-h-screen flex items-center">
+      <section className="relative min-h-screen flex items-center z-10">
+        <div className="absolute inset-0 bg-gradient-hero" />
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left animate-fade-in">
+          <div 
+            ref={heroAnimation.ref}
+            className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-1000 ${
+              heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
+            <div className="text-center lg:text-left animate-slide-in-left">
               <Badge className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20">
                 <Sparkles className="w-4 h-4 mr-2" />
                 AI-Powered Business Intelligence
@@ -52,21 +80,27 @@ const Landing = () => {
               </div>
             </div>
             
-            <div className="relative animate-scale-in">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-3xl transform scale-110" />
-              <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+            
+            <div className="relative animate-slide-in-right">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-3xl transform scale-110 animate-pulse-glow" />
+              <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 animate-float">
+                <img 
+                  src={heroIllustration} 
+                  alt="AI Co-founder Illustration" 
+                  className="w-full h-64 object-cover rounded-lg mb-6 shadow-glow"
+                />
                 <div className="flex items-center gap-4 mb-6">
-                  <img src={bizmateLogo} alt="BizMate.AI" className="w-12 h-12" />
+                  <img src={bizmateLogo} alt="BizMate.AI" className="w-12 h-12 animate-pulse-glow" />
                   <div>
                     <h3 className="text-white font-semibold">AI Co-Founder</h3>
                     <p className="text-white/70 text-sm">Always ready to help</p>
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10 animate-slide-in-right delay-200">
                     <p className="text-white/90 text-sm">"Let's analyze your market opportunity..."</p>
                   </div>
-                  <div className="bg-primary/20 rounded-lg p-4 border border-primary/30">
+                  <div className="bg-primary/20 rounded-lg p-4 border border-primary/30 animate-slide-in-right delay-400">
                     <p className="text-white text-sm">✨ Generated business plan ready!</p>
                   </div>
                 </div>
@@ -77,9 +111,9 @@ const Landing = () => {
       </section>
 
       {/* Value Proposition Section */}
-      <section className="py-24 bg-background">
+      <section className="py-24 bg-background relative z-10">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Why Use BizMate.AI?
             </h2>
@@ -89,9 +123,14 @@ const Landing = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <div className="flex gap-4 items-start group hover:scale-105 transition-transform">
-                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow">
+            <div 
+              ref={valuePropsAnimation.ref}
+              className="space-y-8"
+            >
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
+                valuePropsAnimation.visibleItems[0] ? 'animate-slide-in-left' : 'opacity-0'
+              }`}>
+                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <Target className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -100,8 +139,10 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-start group hover:scale-105 transition-transform">
-                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow">
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
+                valuePropsAnimation.visibleItems[1] ? 'animate-slide-in-left' : 'opacity-0'
+              }`}>
+                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -110,8 +151,10 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-start group hover:scale-105 transition-transform">
-                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow">
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
+                valuePropsAnimation.visibleItems[2] ? 'animate-slide-in-left' : 'opacity-0'
+              }`}>
+                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -120,8 +163,10 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-start group hover:scale-105 transition-transform">
-                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow">
+              <div className={`flex gap-4 items-start group hover:scale-105 transition-all duration-500 ${
+                valuePropsAnimation.visibleItems[3] ? 'animate-slide-in-left' : 'opacity-0'
+              }`}>
+                <div className="bg-gradient-primary p-3 rounded-lg shadow-glow animate-pulse-glow">
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -131,9 +176,9 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50" />
-              <div className="relative bg-card rounded-2xl p-8 border shadow-card">
+            <div className="relative animate-float">
+              <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50 animate-pulse-glow" />
+              <div className="relative bg-card rounded-2xl p-8 border shadow-card animate-scale-in">
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h4 className="text-lg font-semibold text-card-foreground">Business Health Score</h4>
@@ -167,9 +212,9 @@ const Landing = () => {
       </section>
 
       {/* Feature Spotlight */}
-      <section className="py-24 bg-muted/50">
+      <section className="py-24 bg-muted/50 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
               See BizMate.AI in Action
             </h2>
@@ -178,10 +223,15 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-glow transition-all duration-300 cursor-pointer">
+          <div 
+            ref={featuresAnimation.ref}
+            className="grid md:grid-cols-3 gap-8"
+          >
+            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float delay-400 ${
+              featuresAnimation.visibleItems[2] ? 'animate-scale-in' : 'opacity-0'
+            }`}>
               <CardHeader>
-                <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary">
+                <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary animate-pulse-glow">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <CardTitle>BizDocs Generator</CardTitle>
@@ -207,9 +257,11 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-glow transition-all duration-300 cursor-pointer">
+            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float ${
+              featuresAnimation.visibleItems[0] ? 'animate-scale-in' : 'opacity-0'
+            }`}>
               <CardHeader>
-                <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary">
+                <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary animate-pulse-glow">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <CardTitle>AI Scorecard</CardTitle>
@@ -235,9 +287,11 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-glow transition-all duration-300 cursor-pointer">
+            <Card className={`group hover:shadow-glow transition-all duration-500 cursor-pointer animate-float delay-200 ${
+              featuresAnimation.visibleItems[1] ? 'animate-scale-in' : 'opacity-0'
+            }`}>
               <CardHeader>
-                <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary">
+                <div className="bg-gradient-primary p-3 rounded-lg w-fit shadow-primary animate-pulse-glow">
                   <Target className="w-6 h-6 text-white" />
                 </div>
                 <CardTitle>Strategy Builder</CardTitle>
@@ -267,9 +321,9 @@ const Landing = () => {
       </section>
 
       {/* Social Proof */}
-      <section className="py-24 bg-background">
+      <section className="py-24 bg-background relative z-10">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Trusted by Entrepreneurs Worldwide
             </h2>
@@ -281,8 +335,13 @@ const Landing = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-primary/20 shadow-card">
+          <div 
+            ref={testimonialsAnimation.ref}
+            className="grid md:grid-cols-3 gap-8"
+          >
+            <Card className={`border-primary/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float ${
+              testimonialsAnimation.visibleItems[0] ? 'animate-slide-in-left' : 'opacity-0'
+            }`}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
@@ -299,7 +358,9 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-secondary/20 shadow-card">
+            <Card className={`border-secondary/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-200 ${
+              testimonialsAnimation.visibleItems[1] ? 'animate-slide-in-left' : 'opacity-0'
+            }`}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
@@ -316,7 +377,9 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-accent/20 shadow-card">
+            <Card className={`border-accent/20 shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-400 ${
+              testimonialsAnimation.visibleItems[2] ? 'animate-slide-in-left' : 'opacity-0'
+            }`}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
@@ -337,9 +400,9 @@ const Landing = () => {
       </section>
 
       {/* Pricing Teaser */}
-      <section className="py-24 bg-muted/50">
+      <section className="py-24 bg-muted/50 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Choose Your Growth Path
             </h2>
@@ -348,8 +411,8 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="relative border-2 border-border shadow-card">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto animate-scale-in">
+            <Card className="relative border-2 border-border shadow-card hover:shadow-glow transition-all duration-500 animate-float delay-400">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Free</CardTitle>
                 <div className="text-4xl font-bold text-primary">$0</div>
@@ -374,7 +437,7 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="relative border-2 border-primary shadow-glow scale-105">
+            <Card className="relative border-2 border-primary shadow-glow scale-105 animate-pulse-glow">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <Badge className="bg-gradient-primary text-white px-4 py-1">Most Popular</Badge>
               </div>
@@ -406,7 +469,7 @@ const Landing = () => {
               </CardContent>
             </Card>
 
-            <Card className="relative border-2 border-border shadow-card">
+            <Card className="relative border-2 border-border shadow-card hover:shadow-glow transition-all duration-500 animate-float">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Enterprise</CardTitle>
                 <div className="text-4xl font-bold text-primary">Custom</div>
@@ -435,30 +498,33 @@ const Landing = () => {
       </section>
 
       {/* Closing CTA */}
-      <section className="py-24 bg-gradient-hero">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to launch smarter?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Join thousands of entrepreneurs who've accelerated their success with BizMate.AI
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="lg" className="group">
-              Explore BizMate.AI
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button variant="glass" size="lg">
-              <Play className="w-5 h-5 mr-2" />
-              Book a Demo
-            </Button>
+      <section className="py-24 bg-gradient-hero relative z-10">
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="animate-fade-in">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              Ready to launch smarter?
+            </h2>
+            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+              Join thousands of entrepreneurs who've accelerated their success with BizMate.AI
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" size="lg" className="group">
+                Explore BizMate.AI
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button variant="glass" size="lg">
+                <Play className="w-5 h-5 mr-2" />
+                Book a Demo
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 bg-background border-t">
+      <footer className="py-16 bg-background border-t relative z-10">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
