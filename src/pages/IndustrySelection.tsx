@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Store, Shirt, Coffee, Headphones, Monitor, MoreHorizontal, ChevronDown, Plus, Minus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Store, Shirt, Coffee, Headphones, Monitor, MoreHorizontal, ChevronDown, CheckCircle, AlertTriangle } from "lucide-react";
 
 const industries = [
   { 
@@ -118,18 +118,12 @@ const industries = [
 
 const IndustrySelection = () => {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
-  const [expandedCards, setExpandedCards] = useState<{ [key: string]: { whyChoose: boolean; whyNot: boolean } }>({});
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const toggleExpanded = (industryId: string, section: 'whyChoose' | 'whyNot', e: React.MouseEvent) => {
+  const toggleExpanded = (industryId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setExpandedCards(prev => ({
-      ...prev,
-      [industryId]: {
-        ...prev[industryId],
-        [section]: !prev[industryId]?.[section]
-      }
-    }));
+    setExpandedCard(expandedCard === industryId ? null : industryId);
   };
 
   const handleContinue = () => {
@@ -169,72 +163,67 @@ const IndustrySelection = () => {
                     </svg>
                   </div>
                 )}
-                <CardContent className="p-8">
-                  <div className="text-center mb-6">
-                    <div className="text-7xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                <CardContent className="p-6">
+                  <div className="text-center mb-4">
+                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
                       {industry.illustration}
                     </div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">{industry.name}</h3>
-                    <p className="text-muted-foreground font-medium mb-4">{industry.tagline}</p>
+                    <h3 className="text-xl font-bold text-foreground mb-1">{industry.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{industry.tagline}</p>
                   </div>
 
-                  <div className="space-y-3">
-                    <Collapsible 
-                      open={expandedCards[industry.id]?.whyChoose || false}
-                      onOpenChange={(open) => toggleExpanded(industry.id, 'whyChoose', { stopPropagation: () => {} } as React.MouseEvent)}
+                  <div className="text-center">
+                    <button
+                      onClick={(e) => toggleExpanded(industry.id, e)}
+                      className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                     >
-                      <CollapsibleTrigger 
-                        className="flex items-center justify-between w-full p-3 text-left bg-green-50 dark:bg-green-950/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
-                        onClick={(e) => toggleExpanded(industry.id, 'whyChoose', e)}
-                      >
-                        <span className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
-                          <Plus className="w-4 h-4" />
-                          Why Choose This Industry
-                        </span>
-                        <ChevronDown className={`w-4 h-4 text-green-600 dark:text-green-400 transition-transform ${
-                          expandedCards[industry.id]?.whyChoose ? 'rotate-180' : ''
-                        }`} />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-2">
-                        <ul className="space-y-2 p-3 bg-green-50/50 dark:bg-green-950/10 rounded-lg">
-                          {industry.whyChoose.map((point, index) => (
-                            <li key={index} className="text-sm text-green-700 dark:text-green-300 flex items-start gap-2">
-                              <span className="text-green-500 mt-1">•</span>
-                              {point}
-                            </li>
-                          ))}
-                        </ul>
-                      </CollapsibleContent>
-                    </Collapsible>
-
-                    <Collapsible 
-                      open={expandedCards[industry.id]?.whyNot || false}
-                      onOpenChange={(open) => toggleExpanded(industry.id, 'whyNot', { stopPropagation: () => {} } as React.MouseEvent)}
-                    >
-                      <CollapsibleTrigger 
-                        className="flex items-center justify-between w-full p-3 text-left bg-orange-50 dark:bg-orange-950/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-950/40 transition-colors"
-                        onClick={(e) => toggleExpanded(industry.id, 'whyNot', e)}
-                      >
-                        <span className="text-sm font-medium text-orange-700 dark:text-orange-300 flex items-center gap-2">
-                          <Minus className="w-4 h-4" />
-                          Why Not to Choose This Industry
-                        </span>
-                        <ChevronDown className={`w-4 h-4 text-orange-600 dark:text-orange-400 transition-transform ${
-                          expandedCards[industry.id]?.whyNot ? 'rotate-180' : ''
-                        }`} />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-2">
-                        <ul className="space-y-2 p-3 bg-orange-50/50 dark:bg-orange-950/10 rounded-lg">
-                          {industry.whyNot.map((point, index) => (
-                            <li key={index} className="text-sm text-orange-700 dark:text-orange-300 flex items-start gap-2">
-                              <span className="text-orange-500 mt-1">•</span>
-                              {point}
-                            </li>
-                          ))}
-                        </ul>
-                      </CollapsibleContent>
-                    </Collapsible>
+                      Learn More
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                        expandedCard === industry.id ? 'rotate-180' : ''
+                      }`} />
+                    </button>
                   </div>
+
+                  {expandedCard === industry.id && (
+                    <div className="mt-4 animate-fade-in">
+                      <Tabs defaultValue="pros" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-3">
+                          <TabsTrigger value="pros" className="flex items-center gap-2 text-xs">
+                            <CheckCircle className="w-3 h-3" />
+                            Why Choose
+                          </TabsTrigger>
+                          <TabsTrigger value="cons" className="flex items-center gap-2 text-xs">
+                            <AlertTriangle className="w-3 h-3" />
+                            Why Not
+                          </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="pros" className="mt-0">
+                          <div className="bg-muted/30 rounded-lg p-3">
+                            <ul className="space-y-2">
+                              {industry.whyChoose.map((point, index) => (
+                                <li key={index} className="text-xs text-foreground/80 flex items-start gap-2">
+                                  <span className="text-green-500 mt-0.5 text-sm">•</span>
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="cons" className="mt-0">
+                          <div className="bg-muted/30 rounded-lg p-3">
+                            <ul className="space-y-2">
+                              {industry.whyNot.map((point, index) => (
+                                <li key={index} className="text-xs text-foreground/80 flex items-start gap-2">
+                                  <span className="text-orange-500 mt-0.5 text-sm">•</span>
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );
