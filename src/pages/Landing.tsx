@@ -171,7 +171,7 @@ const Landing = () => {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent animate-gradient-shift" />
+        <div className="absolute inset-0 bg-gradient-primary animate-gradient-shift" />
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] animate-grid-flow" />
         <div className="container mx-auto px-4 relative z-10">
           <div ref={heroAnimation.ref} className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-1000 ${heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
