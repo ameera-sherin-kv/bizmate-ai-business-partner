@@ -13,13 +13,17 @@ import {
   CheckCircle,
   Play,
   Users,
-  Sparkles
+  Sparkles,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import bizmateLogo from "@/assets/bizmate-logo.png";
 import heroIllustration from "@/assets/hero-illustration.jpg";
 import flowingBg from "@/assets/flowing-bg.jpg";
 import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 const Landing = () => {
   const heroAnimation = useScrollAnimation();
@@ -27,14 +31,41 @@ const Landing = () => {
   const featuresAnimation = useStaggeredAnimation(3, 200);
   const testimonialsAnimation = useStaggeredAnimation(3, 250);
 
-  // Rotating card content
-  const [currentHealthCard, setCurrentHealthCard] = useState(0);
-  const [currentRoadmapCard, setCurrentRoadmapCard] = useState(0);
-  const [currentBizDocsCard, setCurrentBizDocsCard] = useState(0);
-  const [currentInsightsCard, setCurrentInsightsCard] = useState(0);
+  // Carousel setup
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { 
+      loop: true,
+      align: 'start',
+      skipSnaps: false,
+      dragFree: false
+    },
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
+  );
 
-  const healthCards = [
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+  }, [emblaApi, onSelect]);
+
+  // All carousel cards data
+  const carouselCards = [
     {
+      type: "health",
       score: "82/100",
       title: "Business Health Score",
       status: "bg-green-100 text-green-800",
@@ -46,6 +77,34 @@ const Landing = () => {
       recommendation: "Consider expanding to sustainable home goods - 67% market opportunity match."
     },
     {
+      type: "roadmap",
+      industry: "E-commerce",
+      title: "Personalized Roadmap",
+      phase: "Growth Strategy",
+      items: [
+        "Market expansion analysis",
+        "Customer segmentation", 
+        "Revenue optimization",
+        "Competitive positioning"
+      ]
+    },
+    {
+      type: "bizdocs",
+      title: "Smart BizDocs",
+      docType: "Investor Pitch Deck",
+      pages: "12 slides",
+      sections: ["Problem & Solution", "Market Opportunity", "Business Model", "Financial Projections"]
+    },
+    {
+      type: "insights",
+      title: "Smart Insights",
+      insightType: "Market Opportunity",
+      confidence: "92%",
+      insight: "Sustainable packaging market growing 23% annually in your region.",
+      action: "Consider eco-friendly product line"
+    },
+    {
+      type: "health",
       score: "76/100",
       title: "Operational Efficiency",
       status: "bg-blue-100 text-blue-800",
@@ -57,105 +116,33 @@ const Landing = () => {
       recommendation: "Automate customer service to reduce response time by 40%."
     },
     {
-      score: "91/100",
-      title: "Market Performance",
-      status: "bg-emerald-100 text-emerald-800",
-      items: [
-        { icon: TrendingUp, text: "Market share increased 8%", color: "text-green-500" },
-        { icon: Users, text: "Customer satisfaction: 4.8/5", color: "text-primary" },
-        { icon: Target, text: "Brand awareness up 34%", color: "text-accent" }
-      ],
-      recommendation: "Launch premium product line - customer data shows 73% interest."
-    }
-  ];
-
-  const roadmapCards = [
-    {
-      industry: "E-commerce",
-      phase: "Growth Strategy",
-      items: [
-        "Market expansion analysis",
-        "Customer segmentation",
-        "Revenue optimization",
-        "Competitive positioning"
-      ]
-    },
-    {
+      type: "roadmap",
       industry: "SaaS",
+      title: "Personalized Roadmap",
       phase: "Product-Market Fit",
       items: [
         "User onboarding optimization",
         "Feature prioritization",
-        "Churn reduction strategy",
+        "Churn reduction strategy", 
         "Pricing model validation"
       ]
     },
     {
-      industry: "Food & Beverage",
-      phase: "Brand Building",
-      items: [
-        "Local market penetration",
-        "Supply chain setup",
-        "Regulatory compliance",
-        "Quality control systems"
-      ]
-    }
-  ];
-
-  const bizDocsCards = [
-    {
-      type: "Investor Pitch Deck",
-      pages: "12 slides",
-      sections: ["Problem & Solution", "Market Opportunity", "Business Model", "Financial Projections"]
-    },
-    {
-      type: "Business Plan",
+      type: "bizdocs",
+      title: "Smart BizDocs",
+      docType: "Business Plan",
       pages: "25 pages",
       sections: ["Executive Summary", "Market Analysis", "Operations Plan", "Financial Strategy"]
     },
     {
-      type: "Project Proposal",
-      pages: "8 pages", 
-      sections: ["Project Overview", "Timeline", "Budget Breakdown", "Success Metrics"]
-    }
-  ];
-
-  const insightsCards = [
-    {
-      type: "Market Opportunity",
-      confidence: "92%",
-      insight: "Sustainable packaging market growing 23% annually in your region.",
-      action: "Consider eco-friendly product line"
-    },
-    {
-      type: "Customer Behavior",
+      type: "insights",
+      title: "Smart Insights",
+      insightType: "Customer Behavior",
       confidence: "87%",
       insight: "Peak sales occur during weekend evening hours (6-9 PM).",
       action: "Optimize ad spend timing"
-    },
-    {
-      type: "Competitive Analysis",
-      confidence: "94%",
-      insight: "Competitors lack mobile-first experience - opportunity identified.",
-      action: "Prioritize mobile app development"
     }
   ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHealthCard((prev) => (prev + 1) % healthCards.length);
-      setCurrentRoadmapCard((prev) => (prev + 1) % roadmapCards.length);
-      setCurrentBizDocsCard((prev) => (prev + 1) % bizDocsCards.length);
-      setCurrentInsightsCard((prev) => (prev + 1) % insightsCards.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentHealth = healthCards[currentHealthCard];
-  const currentRoadmap = roadmapCards[currentRoadmapCard];
-  const currentBizDocs = bizDocsCards[currentBizDocsCard];
-  const currentInsights = insightsCards[currentInsightsCard];
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -307,107 +294,143 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="space-y-6">
-              {/* Business Health Score Card */}
-              <div className="relative animate-float">
-                <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50 animate-pulse-glow" />
-                <div className="relative bg-card rounded-2xl p-8 border shadow-card animate-scale-in transition-all duration-500">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-card-foreground">{currentHealth.title}</h4>
-                      <Badge className={currentHealth.status}>{currentHealth.score}</Badge>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {currentHealth.items.map((item, index) => {
-                        const IconComponent = item.icon;
-                        return (
-                          <div key={index} className="flex items-center gap-3">
-                            <IconComponent className={`w-5 h-5 ${item.color}`} />
-                            <span className="text-sm text-muted-foreground">{item.text}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="bg-accent/10 rounded-lg p-4 border border-accent/20">
-                      <p className="text-sm font-medium text-accent">💡 AI Recommendation</p>
-                      <p className="text-sm text-muted-foreground mt-1">{currentHealth.recommendation}</p>
-                    </div>
-                  </div>
+            <div className="relative">
+              {/* Carousel Controls */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-foreground">Live AI Features Demo</h3>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={scrollPrev}
+                    disabled={!canScrollPrev}
+                    className="w-8 h-8"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={scrollNext}
+                    disabled={!canScrollNext}
+                    className="w-8 h-8"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
 
-              {/* Roadmap Card */}
-              <div className="relative animate-float delay-200">
-                <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50" />
-                <div className="relative bg-card rounded-2xl p-6 border shadow-card transition-all duration-500">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-card-foreground">Personalized Roadmap</h4>
-                      <Badge variant="outline">{currentRoadmap.industry}</Badge>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-primary mb-2">{currentRoadmap.phase}</p>
-                      <div className="space-y-2">
-                        {currentRoadmap.items.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-primary rounded-full" />
-                            <span className="text-sm text-muted-foreground">{item}</span>
-                          </div>
-                        ))}
+              {/* Carousel */}
+              <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex gap-6">
+                  {carouselCards.map((card, index) => (
+                    <div key={index} className="flex-[0_0_100%] min-w-0">
+                      <div className="relative animate-float">
+                        <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50 animate-pulse-glow" />
+                        <div className="relative bg-card rounded-2xl p-8 border shadow-card transition-all duration-500">
+                          {card.type === 'health' && (
+                            <div className="space-y-6">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
+                                <Badge className={card.status}>{card.score}</Badge>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                {card.items.map((item, idx) => {
+                                  const IconComponent = item.icon;
+                                  return (
+                                    <div key={idx} className="flex items-center gap-3">
+                                      <IconComponent className={`w-5 h-5 ${item.color}`} />
+                                      <span className="text-sm text-muted-foreground">{item.text}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              <div className="bg-accent/10 rounded-lg p-4 border border-accent/20">
+                                <p className="text-sm font-medium text-accent">💡 AI Recommendation</p>
+                                <p className="text-sm text-muted-foreground mt-1">{card.recommendation}</p>
+                              </div>
+                            </div>
+                          )}
+
+                          {card.type === 'roadmap' && (
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
+                                <Badge variant="outline">{card.industry}</Badge>
+                              </div>
+                              
+                              <div>
+                                <p className="text-sm font-medium text-primary mb-2">{card.phase}</p>
+                                <div className="space-y-2">
+                                  {card.items.map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                      <div className="w-2 h-2 bg-primary rounded-full" />
+                                      <span className="text-sm text-muted-foreground">{item}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {card.type === 'bizdocs' && (
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
+                                <Badge className="bg-secondary/10 text-secondary">{card.pages}</Badge>
+                              </div>
+                              
+                              <div>
+                                <p className="text-sm font-medium text-secondary mb-2">{card.docType}</p>
+                                <div className="space-y-2">
+                                  {card.sections.map((section, idx) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                      <FileText className="w-3 h-3 text-secondary" />
+                                      <span className="text-sm text-muted-foreground">{section}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {card.type === 'insights' && (
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-lg font-semibold text-card-foreground">{card.title}</h4>
+                                <Badge className="bg-accent/10 text-accent">{card.confidence}</Badge>
+                              </div>
+                              
+                              <div>
+                                <p className="text-sm font-medium text-accent mb-2">{card.insightType}</p>
+                                <p className="text-sm text-muted-foreground mb-3">{card.insight}</p>
+                                <div className="bg-accent/10 rounded-lg p-3 border border-accent/20">
+                                  <p className="text-sm font-medium text-accent">🎯 Recommended Action</p>
+                                  <p className="text-sm text-muted-foreground">{card.action}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              {/* BizDocs Card */}
-              <div className="relative animate-float delay-400">
-                <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50" />
-                <div className="relative bg-card rounded-2xl p-6 border shadow-card transition-all duration-500">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-card-foreground">Smart BizDocs</h4>
-                      <Badge className="bg-secondary/10 text-secondary">{currentBizDocs.pages}</Badge>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-secondary mb-2">{currentBizDocs.type}</p>
-                      <div className="space-y-2">
-                        {currentBizDocs.sections.map((section, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <FileText className="w-3 h-3 text-secondary" />
-                            <span className="text-sm text-muted-foreground">{section}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Smart Insights Card */}
-              <div className="relative animate-float delay-600">
-                <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50" />
-                <div className="relative bg-card rounded-2xl p-6 border shadow-card transition-all duration-500">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-card-foreground">Smart Insights</h4>
-                      <Badge className="bg-accent/10 text-accent">{currentInsights.confidence}</Badge>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-accent mb-2">{currentInsights.type}</p>
-                      <p className="text-sm text-muted-foreground mb-3">{currentInsights.insight}</p>
-                      <div className="bg-accent/10 rounded-lg p-3 border border-accent/20">
-                        <p className="text-sm font-medium text-accent">🎯 Recommended Action</p>
-                        <p className="text-sm text-muted-foreground">{currentInsights.action}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Carousel Indicators */}
+              <div className="flex justify-center gap-2 mt-6">
+                {carouselCards.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === selectedIndex ? 'bg-primary' : 'bg-muted-foreground/20'
+                    }`}
+                    onClick={() => emblaApi?.scrollTo(index)}
+                  />
+                ))}
               </div>
             </div>
           </div>
