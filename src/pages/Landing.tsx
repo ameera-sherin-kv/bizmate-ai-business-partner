@@ -193,7 +193,7 @@ const Landing = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
-                <Button variant="hero" size="lg" className="group">
+                <Button variant="hero" size="lg" className="group" onClick={() => window.location.href = '/login'}>
                   Start Free with BizMate.AI
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
