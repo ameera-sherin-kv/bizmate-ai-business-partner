@@ -47,34 +47,110 @@ const conversationFlow = [
     field: "title"
   },
   {
-    question: "Who are you selling to?",
-    type: "options",
-    options: ["Professionals", "Students", "Homemakers", "Premium buyers", "Budget-conscious consumers"],
-    field: "targetAudience"
+    question: "What's your vision for this business? Describe what you want to achieve.",
+    type: "text",
+    field: "vision"
   },
   {
-    question: "What makes your business stand out?",
+    question: "Who are the founders behind this business?",
+    type: "text", 
+    field: "founders"
+  },
+  {
+    question: "What's your mission? How will you make a difference?",
+    type: "text",
+    field: "mission"
+  },
+  {
+    question: "What's your business model?",
     type: "options",
-    options: ["Sustainable & eco-friendly 🌱", "Trendy & modern ✨", "Affordable everyday wear 💸", "Handcrafted / artisanal 🧵", "High-quality materials"],
+    options: ["D2C (Direct to Consumer)", "B2B (Business to Business)", "D2C + B2B (Both)", "Marketplace", "Subscription", "Franchise"],
     field: "businessModel"
   },
   {
-    question: "How do you want your brand to feel?",
-    type: "options", 
-    options: ["Premium 🌟", "Everyday comfort 🌿", "Cultural heritage 🎨", "Youthful & trendy 🎉", "Professional & reliable"],
+    question: "Now I can suggest a tagline! Based on your vision and mission, what resonates with you?",
+    type: "suggestions",
+    field: "tagline"
+  },
+  {
+    question: "What products or services will you offer?",
+    type: "text",
+    field: "products"
+  },
+  {
+    question: "What's your pricing strategy?",
+    type: "text",
+    field: "pricing"
+  },
+  {
+    question: "Who's your target audience?",
+    type: "options",
+    options: ["Millennials & Gen Z", "Eco-conscious consumers", "Budget-conscious families", "Premium buyers", "Small businesses", "Urban professionals"],
+    field: "targetAudience"
+  },
+  {
+    question: "Who are your main competitors?",
+    type: "text",
+    field: "competitors"
+  },
+  {
+    question: "What market opportunity do you see?",
+    type: "text",
+    field: "opportunity"
+  },
+  {
+    question: "How will you market your business?",
+    type: "options",
+    options: ["Social media marketing", "Influencer partnerships", "Content marketing", "Paid advertising", "SEO/Organic", "Word of mouth"],
+    field: "marketing"
+  },
+  {
+    question: "How will you handle sales?",
+    type: "options",
+    options: ["Shopify store", "Amazon/Marketplaces", "Physical retail", "Direct sales", "Social commerce", "Wholesale partnerships"],
+    field: "sales"
+  },
+  {
+    question: "What's your branding approach?",
+    type: "options",
+    options: ["Minimalist & clean", "Bold & vibrant", "Earth-tones & natural", "Premium & luxury", "Playful & youthful", "Traditional & heritage"],
     field: "branding"
   },
   {
-    question: "What's your starting budget for this business?",
+    question: "What tools will you use to run your business?",
+    type: "text",
+    field: "tools"
+  },
+  {
+    question: "Who's on your team?",
+    type: "text",
+    field: "team"
+  },
+  {
+    question: "How will you handle logistics and fulfillment?",
+    type: "text",
+    field: "logistics"
+  },
+  {
+    question: "What's your tech stack?",
+    type: "text",
+    field: "techStack"
+  },
+  {
+    question: "What are your estimated startup costs?",
     type: "options",
-    options: ["Under $1,000", "$1,000 - $5,000", "$5,000 - $20,000", "$20,000 - $50,000", "Over $50,000"],
+    options: ["Under ₹5 lakhs", "₹5-15 lakhs", "₹15-50 lakhs", "₹50 lakhs-1 crore", "Over ₹1 crore"],
     field: "startupCosts"
   },
   {
-    question: "How do you plan to sell your products/services?",
-    type: "options",
-    options: ["Online store", "Physical store", "Social media", "Marketplaces (Amazon, Etsy)", "Direct sales"],
-    field: "sales"
+    question: "What are your revenue streams?",
+    type: "text",
+    field: "revenueStreams"
+  },
+  {
+    question: "What's your financial forecast?",
+    type: "text",
+    field: "forecast"
   }
 ];
 
@@ -167,20 +243,18 @@ const Discovery = () => {
     setMessages(prev => prev.filter(msg => msg.id !== id));
   };
 
-  const generateSuggestions = (userResponse: string, questionIndex: number) => {
+  const generateSuggestions = (userResponse: string, questionIndex: number, businessPlan: BusinessPlan) => {
     // Generate AI suggestions based on user response
-    if (questionIndex === 0) { // Business name
+    if (conversationFlow[questionIndex]?.field === "tagline") {
+      // Generate tagline suggestions based on vision and mission
       const taglines = [
-        "Everyday Elegance",
-        "Comfort Meets Style",
-        "Timeless Quality",
+        "Sustainable Style, Everyday Comfort",
+        "Eco-Friendly Excellence",
+        "Where Tradition Meets Tomorrow",
+        "Conscious Comfort, Timeless Style",
+        "Naturally Yours"
       ];
-      const visions = [
-        `Redefining everyday wear with ${userResponse.toLowerCase()}'s unique style.`,
-        `Empowering customers with high-quality, stylish solutions.`,
-        `Blending tradition with modernity for exceptional experiences.`,
-      ];
-      return { taglines, visions };
+      return { taglines };
     }
     return null;
   };
@@ -190,30 +264,9 @@ const Discovery = () => {
       const updated = { ...prev };
       const currentQuestion = conversationFlow[questionIndex];
       
-      // Update based on the field mapping
-      switch (currentQuestion.field) {
-        case "title":
-          updated.title = userResponse;
-          updated.products = `${userResponse} products and services`;
-          break;
-        case "targetAudience":
-          updated.targetAudience = userResponse;
-          updated.marketing = `Marketing strategy focused on ${userResponse}`;
-          break;
-        case "businessModel":
-          updated.businessModel = userResponse;
-          updated.mission = `Delivering ${userResponse.toLowerCase()} solutions`;
-          break;
-        case "branding":
-          updated.branding = userResponse;
-          break;
-        case "startupCosts":
-          updated.startupCosts = userResponse;
-          updated.forecast = `Financial planning based on ${userResponse} initial investment`;
-          break;
-        case "sales":
-          updated.sales = userResponse;
-          break;
+      // Update the specific field
+      if (currentQuestion.field && currentQuestion.field in updated) {
+        updated[currentQuestion.field as keyof BusinessPlan] = userResponse;
       }
       
       return updated;
@@ -270,13 +323,13 @@ const Discovery = () => {
       if (currentQuestionIndex < conversationFlow.length - 1) {
         const nextQuestionData = conversationFlow[currentQuestionIndex + 1];
         
-        // Check if we should show suggestions first
-        if (currentQuestionIndex === 0) { // After business name
-          const suggestions = generateSuggestions(inputValue, currentQuestionIndex);
+        // Check if we should show suggestions for tagline
+        if (nextQuestionData.field === "tagline") {
+          const suggestions = generateSuggestions(inputValue, currentQuestionIndex + 1, businessPlan);
           if (suggestions) {
             const suggestionMessage: Message = {
               id: messages.length + 3,
-              text: "Based on your business name, here are some suggestions:",
+              text: "Based on your vision and mission, here are some tagline suggestions:",
               isAI: true,
               suggestions: { type: "taglines", items: suggestions.taglines }
             };
