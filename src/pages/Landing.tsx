@@ -326,8 +326,7 @@ const Landing = () => {
                   {carouselCards.map((card, index) => (
                     <div key={index} className="flex-[0_0_100%] min-w-0">
                       <div className="relative animate-float">
-                        <div className="absolute inset-0 bg-gradient-card rounded-2xl blur-xl transform scale-110 opacity-50 animate-pulse-glow" />
-                        <div className="relative bg-card rounded-2xl p-8 border shadow-card transition-all duration-500">
+                        <div className="bg-card rounded-2xl p-8 border shadow-card transition-all duration-500">
                           {card.type === 'health' && (
                             <div className="space-y-6">
                               <div className="flex items-center justify-between">
