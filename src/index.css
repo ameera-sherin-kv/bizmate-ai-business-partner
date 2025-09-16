@@ -44,6 +44,7 @@ All colors MUST be HSL.
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+    --gradient-radial: radial-gradient(circle, var(--color-start) 0%, var(--color-end) 100%);
     
     /* Shadows */
     --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.3);
@@ -118,5 +119,61 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Enhanced Animations */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes grid-flow {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(60px) translateY(60px); }
+}
+
+@keyframes background-flow {
+  0%, 100% { 
+    background-position: 0% 50%;
+    transform: scale(1) rotate(0deg);
+  }
+  25% { 
+    background-position: 25% 25%;
+    transform: scale(1.05) rotate(1deg);
+  }
+  50% { 
+    background-position: 100% 50%;
+    transform: scale(1.02) rotate(-1deg);
+  }
+  75% { 
+    background-position: 75% 75%;
+    transform: scale(1.03) rotate(0.5deg);
+  }
+}
+
+@layer utilities {
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease-in-out infinite;
+  }
+
+  .animate-grid-flow {
+    animation: grid-flow 20s linear infinite;
+  }
+
+  .animate-background-flow {
+    animation: background-flow 20s ease-in-out infinite;
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-gradient-shift,
+    .animate-grid-flow,
+    .animate-background-flow,
+    .animate-float,
+    .animate-pulse-glow {
+      animation: none;
+    }
   }
 }

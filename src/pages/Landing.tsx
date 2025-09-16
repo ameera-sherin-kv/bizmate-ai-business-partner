@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, TrendingUp, FileText, Shield, Zap, Target, Star, ArrowRight, CheckCircle, Play, Users, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { Brain, TrendingUp, FileText, Shield, Zap, Target, Star, ArrowRight, CheckCircle, Play, Users, Sparkles, ChevronLeft, ChevronRight, Rocket } from "lucide-react";
 import bizmateLogo from "@/assets/bizmate-logo.png";
 import heroIllustration from "@/assets/hero-illustration.jpg";
 import flowingBg from "@/assets/flowing-bg.jpg";
@@ -14,6 +14,36 @@ const Landing = () => {
   const valuePropsAnimation = useStaggeredAnimation(4, 300);
   const featuresAnimation = useStaggeredAnimation(3, 200);
   const testimonialsAnimation = useStaggeredAnimation(3, 250);
+
+  // AI conversation animation states
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  
+  const conversationSteps = [
+    { type: 'user', text: "What's your industry?", delay: 0 },
+    { type: 'ai', text: "Textiles.", delay: 1500 },
+    { type: 'user', text: "Analyzing competitors...", delay: 3000 },
+    { type: 'ai', text: "Top 3 found.", delay: 4500 },
+    { type: 'user', text: "Generated business plan ready ✅", delay: 6000 }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentStep((prev) => {
+        if (prev < conversationSteps.length - 1) {
+          setIsTyping(true);
+          setTimeout(() => setIsTyping(false), 800);
+          return prev + 1;
+        } else {
+          // Reset animation
+          setTimeout(() => setCurrentStep(0), 2000);
+          return prev;
+        }
+      });
+    }, 7000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   // Carousel setup
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -121,22 +151,36 @@ const Landing = () => {
     action: "Optimize ad spend timing"
   }];
   return <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Flowing Background Elements */}
+      {/* Dynamic Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-5 animate-background-flow" style={{
-        backgroundImage: `url(${flowingBg})`,
-        backgroundSize: '200% 100%',
-        backgroundRepeat: 'no-repeat'
-      }} />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-float delay-300" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl animate-pulse-glow" />
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-background-flow" />
+        
+        {/* Flowing background image */}
+        <div className="absolute inset-0 opacity-3" style={{
+          backgroundImage: `url(${flowingBg})`,
+          backgroundSize: '150% 100%',
+          backgroundRepeat: 'no-repeat',
+          animation: 'background-flow 20s ease-in-out infinite'
+        }} />
+        
+        {/* Dynamic floating orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/10 to-primary-glow/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-l from-secondary/10 to-accent/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-accent/5 to-transparent rounded-full blur-3xl animate-pulse-glow" />
+        
+        {/* Particle lines */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute w-px h-32 bg-gradient-to-b from-transparent via-primary/30 to-transparent animate-float" style={{top: '20%', left: '15%', animationDelay: '0s'}} />
+          <div className="absolute w-px h-24 bg-gradient-to-b from-transparent via-accent/30 to-transparent animate-float" style={{top: '50%', left: '85%', animationDelay: '3s'}} />
+          <div className="absolute w-24 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent animate-float" style={{top: '70%', left: '30%', animationDelay: '1.5s'}} />
+        </div>
       </div>
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center z-10">
-        <div className="absolute inset-0 bg-gradient-hero" />
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent animate-gradient-shift" />
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] animate-grid-flow" />
         <div className="container mx-auto px-4 relative z-10">
           <div ref={heroAnimation.ref} className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-1000 ${heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="text-center lg:text-left animate-slide-in-left">
@@ -146,17 +190,17 @@ const Landing = () => {
               </Badge>
               
               <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                Still spending weeks figuring out your 
-                <span className="bg-gradient-to-r from-primary-glow to-accent bg-clip-text text-transparent"> business plan?</span>
+                Don't just plan your business. 
+                <span className="bg-gradient-to-r from-primary-glow to-accent bg-clip-text text-transparent animate-pulse"> Launch it smarter with AI.</span>
               </h1>
               
               <p className="text-xl text-white/90 mb-8 max-w-2xl">
-                BizMate.AI helps entrepreneurs validate, launch, and scale smarter in half the time.
+                Validate, launch, and scale smarter with AI — in days, not months.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
                 <Button variant="hero" size="lg" className="group">
-                  Explore BizMate.AI
+                  Start Free with BizMate.AI
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button variant="glass" size="lg">
@@ -164,26 +208,66 @@ const Landing = () => {
                   Book a Demo
                 </Button>
               </div>
+              
+              {/* Social Proof */}
+              <div className="flex flex-col sm:flex-row gap-4 text-white/80 text-sm">
+                <div className="flex items-center gap-2">
+                  <Rocket className="w-4 h-4 text-primary-glow animate-pulse" />
+                  <span>Trusted by 500+ founders</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-accent animate-pulse" />
+                  <span>Saves 20+ hours per week</span>
+                </div>
+              </div>
             </div>
             
             <div className="relative animate-slide-in-right">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-3xl transform scale-110 animate-pulse-glow" />
-              <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 animate-float">
-                <img src={heroIllustration} alt="AI Co-founder Illustration" className="w-full h-64 object-cover rounded-lg mb-6 shadow-glow" />
+              {/* Animated particles background */}
+              <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                <div className="absolute w-2 h-2 bg-primary/40 rounded-full animate-float" style={{top: '20%', left: '10%', animationDelay: '0s'}} />
+                <div className="absolute w-1 h-1 bg-accent/60 rounded-full animate-float" style={{top: '60%', left: '80%', animationDelay: '1s'}} />
+                <div className="absolute w-1.5 h-1.5 bg-secondary/50 rounded-full animate-float" style={{top: '80%', left: '20%', animationDelay: '2s'}} />
+              </div>
+              
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 rounded-2xl blur-2xl transform scale-110 animate-pulse-glow" />
+              <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                <div className="relative">
+                  <img src={heroIllustration} alt="AI Co-founder Dashboard" className="w-full h-64 object-cover rounded-lg mb-6 shadow-glow" />
+                  {/* Typing cursor animation */}
+                  <div className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full animate-pulse" />
+                </div>
+                
                 <div className="flex items-center gap-4 mb-6">
-                  <img src={bizmateLogo} alt="BizMate.AI" className="w-12 h-12 animate-pulse-glow" />
+                  <div className="relative">
+                    <img src={bizmateLogo} alt="BizMate.AI" className="w-12 h-12" />
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse" />
+                  </div>
                   <div>
-                    <h3 className="text-white font-semibold">AI Co-Founder</h3>
+                    <h3 className="text-white font-semibold flex items-center gap-2">
+                      AI Co-Founder 
+                      <Brain className="w-4 h-4 animate-pulse text-primary-glow" />
+                    </h3>
                     <p className="text-white/70 text-sm">Always ready to help</p>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10 animate-slide-in-right delay-200">
-                    <p className="text-white/90 text-sm">"Let's analyze your market opportunity..."</p>
-                  </div>
-                  <div className="bg-primary/20 rounded-lg p-4 border border-primary/30 animate-slide-in-right delay-400">
-                    <p className="text-white text-sm">✨ Generated business plan ready!</p>
-                  </div>
+                
+                <div className="space-y-3 min-h-[120px]">
+                  {conversationSteps.slice(0, currentStep + 1).map((step, index) => (
+                    <div 
+                      key={index}
+                      className={`${step.type === 'ai' ? 'bg-primary/20 border-primary/30' : 'bg-white/5 border-white/10'} rounded-lg p-3 border animate-slide-in-right`}
+                      style={{animationDelay: `${index * 200}ms`}}
+                    >
+                      <p className="text-white/90 text-sm flex items-center gap-2">
+                        {step.type === 'ai' && <Brain className="w-3 h-3 text-primary-glow" />}
+                        {step.text}
+                        {index === currentStep && isTyping && (
+                          <span className="w-1 h-4 bg-white/60 animate-pulse inline-block ml-1" />
+                        )}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

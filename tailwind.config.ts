@@ -65,6 +65,7 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-card': 'var(--gradient-card)',
+        'gradient-radial': 'radial-gradient(circle, var(--tw-gradient-stops))',
       },
       boxShadow: {
         'primary': 'var(--shadow-primary)',
@@ -156,6 +157,22 @@ export default {
           "100%": {
             transform: "translateX(100%)"
           }
+        },
+        "gradient-shift": {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%"
+          },
+          "50%": {
+            backgroundPosition: "100% 50%"
+          }
+        },
+        "grid-flow": {
+          "0%": {
+            transform: "translateX(0) translateY(0)"
+          },
+          "100%": {
+            transform: "translateX(60px) translateY(60px)"
+          }
         }
       },
       animation: {
@@ -168,6 +185,8 @@ export default {
         "slide-in-right": "slide-in-right 0.6s ease-out",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
         "background-flow": "background-flow 20s linear infinite",
+        "gradient-shift": "gradient-shift 8s ease-in-out infinite",
+        "grid-flow": "grid-flow 20s linear infinite",
       },
     },
   },
