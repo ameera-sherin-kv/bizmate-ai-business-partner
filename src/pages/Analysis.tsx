@@ -6,23 +6,23 @@ import { TrendingUp, AlertTriangle, Target, CheckCircle, XCircle, Clock } from "
 
 const Analysis = () => {
   const navigate = useNavigate();
-  const businessScore = 78;
+  const businessScore = 76;
 
   const strengths = [
-    "Clear target market identification",
-    "Realistic budget planning",
-    "Strong industry knowledge",
+    "Strong eco-friendly positioning",
+    "Growing niche market demand",
+    "Clear artisan partnership strategy",
   ];
 
   const weaknesses = [
-    "Limited marketing strategy",
-    "No competitor analysis done",
+    "High initial inventory cost",
+    "Limited founder experience in textiles",
   ];
 
   const improvements = [
-    "Develop comprehensive marketing plan",
-    "Research main competitors",
-    "Create pricing strategy",
+    "Subscription model vs. retail",
+    "Influencer-heavy marketing vs. organic storytelling",
+    "Premium vs. mass market positioning",
   ];
 
   return (

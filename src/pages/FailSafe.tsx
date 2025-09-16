@@ -28,21 +28,21 @@ const alerts: Alert[] = [
   {
     id: 1,
     title: "Sales Performance Stable",
-    description: "Your monthly sales are tracking well against targets",
+    description: "Monthly sales tracking well vs. targets",
     severity: "green",
     icon: <CheckCircle className="w-5 h-5" />
   },
   {
     id: 2,
     title: "High Ad Spend Alert",
-    description: "Marketing costs are 25% above average with low conversion rates",
+    description: "Marketing costs 25% above average with low conversion rates",
     severity: "yellow",
     icon: <AlertTriangle className="w-5 h-5" />
   },
   {
     id: 3,
     title: "Inventory Running Low",
-    description: "Product A stock is below minimum threshold (12 units remaining)",
+    description: "Organic Cotton Shirts below threshold (12 units left)",
     severity: "red",
     icon: <XCircle className="w-5 h-5" />
   },
@@ -58,7 +58,7 @@ const alerts: Alert[] = [
 const FailSafe = () => {
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const overallScore = 76;
+  const overallScore = 82;
 
   const handleRefresh = () => {
     setIsRefreshing(true);
