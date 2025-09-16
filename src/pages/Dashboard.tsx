@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   TrendingUp, 
   DollarSign, 
@@ -85,6 +85,20 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleGenerateDocument = (template: any) => {
+    setSelectedTemplate(template);
+    setIsGenerating(true);
+    
+    // Simulate AI generation for 1-3 seconds
+    const loadingTime = Math.random() * 2000 + 1000; // 1-3 seconds
+    setTimeout(() => {
+      setIsGenerating(false);
+      setIsDialogOpen(true);
+    }, loadingTime);
+  };
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -261,41 +275,76 @@ const Dashboard = () => {
             {/* Document Templates Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {documentTemplates.map((template) => (
-                <Sheet key={template.id}>
-                  <SheetTrigger asChild>
-                    <Card className="cursor-pointer hover:shadow-glow transition-all duration-300 hover:-translate-y-1 group">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center gap-4">
-                          <div className="p-3 rounded-lg bg-background/50 group-hover:bg-primary/10 transition-colors">
-                            <template.icon className={`w-8 h-8 ${template.color} group-hover:scale-110 transition-transform`} />
-                          </div>
-                          <div>
-                            <CardTitle className="text-xl font-semibold">{template.title}</CardTitle>
-                            <CardDescription className="text-muted-foreground mt-1">
-                              {template.description}
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <Button variant="outline" className="w-full group-hover:bg-primary/5">
+                <Card key={template.id} className="cursor-pointer hover:shadow-glow transition-all duration-300 hover:-translate-y-1 group">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-lg bg-background/50 group-hover:bg-primary/10 transition-colors">
+                        <template.icon className={`w-8 h-8 ${template.color} group-hover:scale-110 transition-transform`} />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl font-semibold">{template.title}</CardTitle>
+                        <CardDescription className="text-muted-foreground mt-1">
+                          {template.description}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <Button 
+                      variant="outline" 
+                      className="w-full group-hover:bg-primary/5"
+                      onClick={() => handleGenerateDocument(template)}
+                      disabled={isGenerating}
+                    >
+                      {isGenerating ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
                           <Sparkles className="w-4 h-4 mr-2" />
                           Generate with AI
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </SheetTrigger>
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-                  <SheetContent className="w-[600px] sm:w-[800px] overflow-y-auto">
-                    <SheetHeader>
-                      <SheetTitle className="flex items-center gap-3">
-                        <template.icon className={`w-6 h-6 ${template.color}`} />
-                        {template.title}
-                      </SheetTitle>
-                      <SheetDescription>
-                        AI-generated document using your business data
-                      </SheetDescription>
-                    </SheetHeader>
+            {/* Loading Dialog */}
+            {isGenerating && (
+              <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+                <Card className="w-96 p-8 text-center shadow-glow">
+                  <div className="mb-6">
+                    <RefreshCw className="w-12 h-12 mx-auto text-primary animate-spin" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Generating Your Document</h3>
+                  <p className="text-muted-foreground mb-4">Our AI is crafting your {selectedTemplate?.title.toLowerCase()}...</p>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-gradient-primary h-2 rounded-full animate-pulse" style={{width: '70%'}}></div>
+                  </div>
+                </Card>
+              </div>
+            )}
+
+            {/* Document Content Dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent className="max-w-[90vw] max-h-[90vh] w-[90vw] h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-3 text-2xl">
+                    {selectedTemplate && (
+                      <>
+                        <selectedTemplate.icon className={`w-8 h-8 ${selectedTemplate.color}`} />
+                        {selectedTemplate.title}
+                      </>
+                    )}
+                  </DialogTitle>
+                  <DialogDescription className="text-lg">
+                    AI-generated document using your business data
+                  </DialogDescription>
+                </DialogHeader>
 
                     <div className="mt-6 space-y-6">
                       {/* Preview Area */}
