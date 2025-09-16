@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Store, Shirt, Coffee, Headphones, Monitor, MoreHorizontal } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Store, Shirt, Coffee, Headphones, Monitor, MoreHorizontal, ChevronDown, Plus, Minus } from "lucide-react";
 
 const industries = [
   { 
@@ -11,7 +12,17 @@ const industries = [
     icon: Store, 
     color: "bg-primary/10 text-primary",
     tagline: "Physical Goods",
-    illustration: "🛍️"
+    illustration: "🛍️",
+    whyChoose: [
+      "Direct customer interaction and immediate sales",
+      "Tangible products with clear value proposition",
+      "Multiple revenue streams (online + offline)"
+    ],
+    whyNot: [
+      "High inventory and storage costs",
+      "Seasonal fluctuations affect revenue",
+      "Competition from established retailers"
+    ]
   },
   { 
     id: "textiles", 
@@ -19,7 +30,17 @@ const industries = [
     icon: Shirt, 
     color: "bg-secondary/10 text-secondary",
     tagline: "Clothing & Fabrics",
-    illustration: "🧵"
+    illustration: "🧵",
+    whyChoose: [
+      "Growing sustainable fashion market",
+      "Creative expression and design freedom",
+      "Strong brand loyalty potential"
+    ],
+    whyNot: [
+      "Complex supply chain management",
+      "Fast fashion competition pressure",
+      "Seasonal inventory challenges"
+    ]
   },
   { 
     id: "fnb", 
@@ -27,7 +48,17 @@ const industries = [
     icon: Coffee, 
     color: "bg-accent/10 text-accent",
     tagline: "Food & Beverage",
-    illustration: "☕"
+    illustration: "☕",
+    whyChoose: [
+      "Essential daily need with repeat customers",
+      "High profit margins on successful items",
+      "Community building opportunities"
+    ],
+    whyNot: [
+      "Strict health regulations and compliance",
+      "Perishable inventory management",
+      "High operational and labor costs"
+    ]
   },
   { 
     id: "services", 
@@ -35,7 +66,17 @@ const industries = [
     icon: Headphones, 
     color: "bg-primary-light/10 text-primary-light",
     tagline: "Consulting & Support",
-    illustration: "💼"
+    illustration: "💼",
+    whyChoose: [
+      "Low startup costs and overhead",
+      "Scalable business model",
+      "Expertise-based competitive advantage"
+    ],
+    whyNot: [
+      "Time-intensive delivery model",
+      "Difficulty scaling without team growth",
+      "Client dependency and payment delays"
+    ]
   },
   { 
     id: "digital", 
@@ -43,7 +84,17 @@ const industries = [
     icon: Monitor, 
     color: "bg-secondary-light/10 text-secondary-light",
     tagline: "Software & Apps",
-    illustration: "💻"
+    illustration: "💻",
+    whyChoose: [
+      "Global market reach potential",
+      "High scalability with low marginal costs",
+      "Recurring revenue opportunities"
+    ],
+    whyNot: [
+      "High technical development costs",
+      "Intense competition from tech giants",
+      "Constant need for updates and innovation"
+    ]
   },
   { 
     id: "others", 
@@ -51,13 +102,35 @@ const industries = [
     icon: MoreHorizontal, 
     color: "bg-muted text-muted-foreground",
     tagline: "Custom Business",
-    illustration: "🧩"
+    illustration: "🧩",
+    whyChoose: [
+      "Unique market positioning opportunity",
+      "Flexibility to define your own rules",
+      "Potential for innovative business models"
+    ],
+    whyNot: [
+      "No established industry benchmarks",
+      "Difficult to find relevant mentors",
+      "Higher market education requirements"
+    ]
   },
 ];
 
 const IndustrySelection = () => {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
+  const [expandedCards, setExpandedCards] = useState<{ [key: string]: { whyChoose: boolean; whyNot: boolean } }>({});
   const navigate = useNavigate();
+
+  const toggleExpanded = (industryId: string, section: 'whyChoose' | 'whyNot', e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedCards(prev => ({
+      ...prev,
+      [industryId]: {
+        ...prev[industryId],
+        [section]: !prev[industryId]?.[section]
+      }
+    }));
+  };
 
   const handleContinue = () => {
     if (selectedIndustry) {
@@ -71,7 +144,7 @@ const IndustrySelection = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">Choose Your Business Industry</h1>
           <p className="text-xl text-muted-foreground">
-            Help us personalize your experience and provide tailored insights
+            Help us personalize your experience with tailored insights for your business journey.
           </p>
         </div>
 
@@ -96,12 +169,72 @@ const IndustrySelection = () => {
                     </svg>
                   </div>
                 )}
-                <CardContent className="p-8 text-center">
-                  <div className="text-7xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                    {industry.illustration}
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <div className="text-7xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                      {industry.illustration}
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">{industry.name}</h3>
+                    <p className="text-muted-foreground font-medium mb-4">{industry.tagline}</p>
                   </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{industry.name}</h3>
-                  <p className="text-muted-foreground font-medium">{industry.tagline}</p>
+
+                  <div className="space-y-3">
+                    <Collapsible 
+                      open={expandedCards[industry.id]?.whyChoose || false}
+                      onOpenChange={(open) => toggleExpanded(industry.id, 'whyChoose', { stopPropagation: () => {} } as React.MouseEvent)}
+                    >
+                      <CollapsibleTrigger 
+                        className="flex items-center justify-between w-full p-3 text-left bg-green-50 dark:bg-green-950/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
+                        onClick={(e) => toggleExpanded(industry.id, 'whyChoose', e)}
+                      >
+                        <span className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
+                          <Plus className="w-4 h-4" />
+                          Why Choose This Industry
+                        </span>
+                        <ChevronDown className={`w-4 h-4 text-green-600 dark:text-green-400 transition-transform ${
+                          expandedCards[industry.id]?.whyChoose ? 'rotate-180' : ''
+                        }`} />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2">
+                        <ul className="space-y-2 p-3 bg-green-50/50 dark:bg-green-950/10 rounded-lg">
+                          {industry.whyChoose.map((point, index) => (
+                            <li key={index} className="text-sm text-green-700 dark:text-green-300 flex items-start gap-2">
+                              <span className="text-green-500 mt-1">•</span>
+                              {point}
+                            </li>
+                          ))}
+                        </ul>
+                      </CollapsibleContent>
+                    </Collapsible>
+
+                    <Collapsible 
+                      open={expandedCards[industry.id]?.whyNot || false}
+                      onOpenChange={(open) => toggleExpanded(industry.id, 'whyNot', { stopPropagation: () => {} } as React.MouseEvent)}
+                    >
+                      <CollapsibleTrigger 
+                        className="flex items-center justify-between w-full p-3 text-left bg-orange-50 dark:bg-orange-950/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-950/40 transition-colors"
+                        onClick={(e) => toggleExpanded(industry.id, 'whyNot', e)}
+                      >
+                        <span className="text-sm font-medium text-orange-700 dark:text-orange-300 flex items-center gap-2">
+                          <Minus className="w-4 h-4" />
+                          Why Not to Choose This Industry
+                        </span>
+                        <ChevronDown className={`w-4 h-4 text-orange-600 dark:text-orange-400 transition-transform ${
+                          expandedCards[industry.id]?.whyNot ? 'rotate-180' : ''
+                        }`} />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2">
+                        <ul className="space-y-2 p-3 bg-orange-50/50 dark:bg-orange-950/10 rounded-lg">
+                          {industry.whyNot.map((point, index) => (
+                            <li key={index} className="text-sm text-orange-700 dark:text-orange-300 flex items-start gap-2">
+                              <span className="text-orange-500 mt-1">•</span>
+                              {point}
+                            </li>
+                          ))}
+                        </ul>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </div>
                 </CardContent>
               </Card>
             );
