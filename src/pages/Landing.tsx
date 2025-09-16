@@ -156,14 +156,6 @@ const Landing = () => {
         {/* Animated gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-background-flow" />
         
-        {/* Flowing background image */}
-        <div className="absolute inset-0 opacity-3" style={{
-          backgroundImage: `url(${flowingBg})`,
-          backgroundSize: '150% 100%',
-          backgroundRepeat: 'no-repeat',
-          animation: 'background-flow 20s ease-in-out infinite'
-        }} />
-        
         {/* Dynamic floating orbs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/10 to-primary-glow/10 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-l from-secondary/10 to-accent/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}} />
