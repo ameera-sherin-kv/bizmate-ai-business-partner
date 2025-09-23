@@ -100,17 +100,9 @@ const Analysis = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
-          {/* Centered circular loader with AI glow */}
-          <div className="relative mb-12">
-            <div className="w-32 h-32 mx-auto">
-              <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse"></div>
-              <div className="absolute inset-2 rounded-full bg-primary/30 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute inset-4 rounded-full bg-primary/40 animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute inset-6 rounded-full bg-primary animate-spin border-4 border-transparent border-t-primary-foreground"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Zap className="w-8 h-8 text-primary-foreground animate-pulse" />
-              </div>
-            </div>
+          {/* Simple spinning loader */}
+          <div className="w-16 h-16 mx-auto mb-8">
+            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           </div>
 
           {/* Rotating text statements */}
@@ -130,12 +122,10 @@ const Analysis = () => {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto pt-8">
-        <div 
-          ref={headerRef}
-          className={`text-center mb-12 transition-all duration-700 ${
-            headerVisible ? 'animate-fade-in' : 'opacity-0 translate-y-8'
-          }`}
-        >
+        {/* Title Section */}
+        <div className={`text-center mb-12 transition-all duration-700 ${
+          showScoreReveal ? 'animate-fade-in' : 'opacity-0 translate-y-8'
+        }`}>
           <h1 className="text-4xl font-bold text-primary mb-4">Your Business Analysis</h1>
           <p className="text-xl text-muted-foreground">
             AI-powered insights about your business potential
