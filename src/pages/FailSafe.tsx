@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { 
   AlertTriangle, 
   CheckCircle, 
@@ -58,7 +59,61 @@ const alerts: Alert[] = [
 const FailSafe = () => {
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showScoreReveal, setShowScoreReveal] = useState(false);
+  const [showCards, setShowCards] = useState(false);
+  const [currentScore, setCurrentScore] = useState(0);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   const overallScore = 82;
+
+  const loadingTexts = [
+    "Loading your AI report as per the statistics…",
+    "Analyzing what's going wrong…",
+    "Identifying what's performing well…",
+    "Finalizing actionable insights…"
+  ];
+
+  useEffect(() => {
+    // Cycle through loading texts every 2.5 seconds
+    const textInterval = setInterval(() => {
+      setLoadingTextIndex((prev) => (prev + 1) % loadingTexts.length);
+    }, 2500);
+
+    // Complete loading after 10 seconds
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+      setShowScoreReveal(true);
+      clearInterval(textInterval);
+    }, 10000);
+
+    return () => {
+      clearInterval(textInterval);
+      clearTimeout(loadingTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (showScoreReveal) {
+      // Animate score counter
+      let start = 0;
+      const duration = 2000;
+      const increment = overallScore / (duration / 16);
+      
+      const scoreTimer = setInterval(() => {
+        start += increment;
+        if (start >= overallScore) {
+          setCurrentScore(overallScore);
+          clearInterval(scoreTimer);
+          // Show cards after score animation completes
+          setTimeout(() => setShowCards(true), 500);
+        } else {
+          setCurrentScore(Math.floor(start));
+        }
+      }, 16);
+
+      return () => clearInterval(scoreTimer);
+    }
+  }, [showScoreReveal, overallScore]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -93,28 +148,47 @@ const FailSafe = () => {
     }
   };
 
+  // Loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center">
+          {/* Minimal circular loader with glowing ring */}
+          <div className="relative mb-8">
+            <div className="w-20 h-20 mx-auto">
+              <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin"></div>
+              <div className="absolute -inset-1 rounded-full bg-primary/20 animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Cycling status texts */}
+          <div className="h-16 flex items-center justify-center">
+            <p className="text-lg text-muted-foreground animate-fade-in max-w-md">
+              {loadingTexts[loadingTextIndex]}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto pt-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-primary mb-2">FailSafe AI Report</h1>
-            <p className="text-xl text-muted-foreground">AI-powered business monitoring and alerts</p>
-          </div>
-          <Button 
-            onClick={handleRefresh}
-            variant="hero"
-            disabled={isRefreshing}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            Refresh Report
-          </Button>
+
+        {/* Page Title */}
+        <div className={`text-center mb-12 transition-all duration-700 ${
+          showScoreReveal ? 'animate-fade-in' : 'opacity-0 translate-y-8'
+        }`}>
+          <h1 className="text-4xl font-bold text-primary mb-2">FailSafe AI Report</h1>
+          <p className="text-xl text-muted-foreground">AI-powered business monitoring and alerts</p>
         </div>
 
         {/* Overall Business Health */}
-        <Card className="mb-8 shadow-card">
+        <Card className={`mb-8 shadow-card transition-all duration-700 ${
+          showScoreReveal ? 'animate-scale-in' : 'opacity-0 scale-95'
+        }`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="w-6 h-6 text-primary" />
@@ -141,13 +215,16 @@ const FailSafe = () => {
                     stroke="hsl(var(--primary))"
                     strokeWidth="8"
                     fill="none"
-                    strokeDasharray={`${overallScore * 2.51} 251`}
-                    className="transition-all duration-1000 ease-out"
+                    strokeDasharray={`${currentScore * 2.51} 251`}
+                    className="transition-all duration-500 ease-out"
+                    style={{
+                      filter: currentScore === overallScore ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.5))' : 'none'
+                    }}
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{overallScore}</div>
+                    <div className="text-2xl font-bold text-primary">{currentScore}</div>
                     <div className="text-xs text-muted-foreground">/ 100</div>
                   </div>
                 </div>
@@ -177,17 +254,26 @@ const FailSafe = () => {
         </Card>
 
         {/* Alert List */}
-        <Card className="mb-8 shadow-card">
+        <Card className={`mb-8 shadow-card transition-all duration-700 ${
+          showCards ? 'animate-fade-in translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <CardHeader>
             <CardTitle>AI Alerts & Recommendations</CardTitle>
             <CardDescription>Real-time monitoring of your business metrics</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {alerts.map((alert) => (
+              {alerts.map((alert, index) => (
                 <Card
                   key={alert.id}
-                  className={`${getSeverityColor(alert.severity)} transition-all hover:shadow-md`}
+                  className={`${getSeverityColor(alert.severity)} transition-all hover:shadow-md ${
+                    showCards 
+                      ? 'animate-scale-in opacity-100 translate-y-0' 
+                      : 'opacity-0 translate-y-4 scale-95'
+                  }`}
+                  style={{
+                    animationDelay: showCards ? `${index * 200}ms` : '0ms'
+                  }}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -217,12 +303,24 @@ const FailSafe = () => {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 justify-center">
+        <div className={`flex gap-4 justify-center transition-all duration-700 ${
+          showCards ? 'animate-fade-in' : 'opacity-0 translate-y-4'
+        }`}
+        style={{ animationDelay: showCards ? '800ms' : '0ms' }}>
           <Button onClick={() => navigate("/dashboard")} variant="outline" size="lg">
             Back to Dashboard
           </Button>
           <Button onClick={() => navigate("/scaling")} variant="hero" size="lg">
             View Scaling Roadmap
+          </Button>
+          <Button 
+            onClick={handleRefresh}
+            variant="outline"
+            disabled={isRefreshing}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh Report
           </Button>
         </div>
       </div>
