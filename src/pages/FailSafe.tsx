@@ -153,13 +153,9 @@ const FailSafe = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
-          {/* Minimal circular loader with glowing ring */}
-          <div className="relative mb-8">
-            <div className="w-20 h-20 mx-auto">
-              <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin"></div>
-              <div className="absolute -inset-1 rounded-full bg-primary/20 animate-pulse"></div>
-            </div>
+          {/* Simple spinning loader */}
+          <div className="w-16 h-16 mx-auto mb-8">
+            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           </div>
 
           {/* Cycling status texts */}
