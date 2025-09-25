@@ -47,8 +47,8 @@ export const ScenarioSelector = () => {
 
   return (
     <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl flex items-center justify-between">
           Scenario Management
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -91,12 +91,12 @@ export const ScenarioSelector = () => {
           </Dialog>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {/* Scenario Selector */}
-        <div className="space-y-2">
-          <Label>Active Scenario</Label>
+        <div className="space-y-3">
+          <Label className="text-base font-medium">Active Scenario</Label>
           <Select value={selectedScenario} onValueChange={handleScenarioChange}>
-            <SelectTrigger>
+            <SelectTrigger className="h-11">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -115,25 +115,40 @@ export const ScenarioSelector = () => {
 
         {/* Current Scenario Info */}
         {currentScenario && (
-          <div className="p-3 bg-muted/50 rounded-lg space-y-2">
-            <p className="text-sm font-medium">{currentScenario.name}</p>
-            <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-              <div>Sales: {currentScenario.inputs.salesVolumeChange}%</div>
-              <div>Price: {currentScenario.inputs.priceChange}%</div>
-              <div>COGS: {currentScenario.inputs.cogsPercent}%</div>
-              <div>Overheads: {currentScenario.inputs.overheadsChange}%</div>
-              <div>Tax: {currentScenario.inputs.taxRate}%</div>
+          <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+            <p className="text-base font-semibold">{currentScenario.name}</p>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Sales:</span>
+                <span className="font-medium">{currentScenario.inputs.salesVolumeChange}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Price:</span>
+                <span className="font-medium">{currentScenario.inputs.priceChange}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">COGS:</span>
+                <span className="font-medium">{currentScenario.inputs.cogsPercent}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Overheads:</span>
+                <span className="font-medium">{currentScenario.inputs.overheadsChange}%</span>
+              </div>
+              <div className="flex justify-between col-span-2">
+                <span className="text-muted-foreground">Tax Rate:</span>
+                <span className="font-medium">{currentScenario.inputs.taxRate}%</span>
+              </div>
             </div>
           </div>
         )}
 
         {/* Scenario Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={resetToBase}
-            className="flex-1"
+            className="flex-1 h-10"
           >
             Reset to Base
           </Button>
@@ -141,9 +156,10 @@ export const ScenarioSelector = () => {
           {currentScenario && currentScenario.id !== 'base' && (
             <Button
               variant="destructive"
-              size="sm"
+              size="default"
               onClick={() => handleDeleteScenario(currentScenario.id)}
               disabled={isLoading}
+              className="h-10"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -152,19 +168,19 @@ export const ScenarioSelector = () => {
 
         {/* Saved Scenarios List */}
         {scenarios.length > 3 && (
-          <div className="space-y-2">
-            <Label>Saved Scenarios</Label>
-            <div className="space-y-1 max-h-32 overflow-y-auto">
+          <div className="space-y-3">
+            <Label className="text-base font-medium">Saved Scenarios</Label>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
               {scenarios
                 .filter(s => !['base', 'optimistic', 'pessimistic'].includes(s.id))
                 .map((scenario) => (
                   <div
                     key={scenario.id}
-                    className="flex items-center justify-between p-2 rounded border"
+                    className="flex items-center justify-between p-3 rounded-md border bg-background hover:bg-muted/30 transition-colors"
                   >
                     <button
                       onClick={() => loadScenario(scenario.id)}
-                      className="text-sm font-medium hover:text-primary"
+                      className="text-sm font-medium hover:text-primary transition-colors"
                     >
                       {scenario.name}
                     </button>
@@ -173,8 +189,9 @@ export const ScenarioSelector = () => {
                       size="sm"
                       onClick={() => handleDeleteScenario(scenario.id)}
                       disabled={isLoading}
+                      className="h-8 w-8 p-0"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 ))}
