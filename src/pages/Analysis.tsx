@@ -18,7 +18,7 @@ const Analysis = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<FinanceAnalysisResult | null>(null);
-  const [currentStep, setCurrentStep] = useState<'upload' | 'processing' | 'complete' | 'evaluation'>('upload');
+  const [currentStep, setCurrentStep] = useState<'upload' | 'processing' | 'evaluation'>('upload');
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   // Check if coming from discovery page for evaluation mode
@@ -117,17 +117,14 @@ const Analysis = () => {
       // Set the base data in dashboard store
       setBaseData(result.profitLoss);
       setAnalysisResult(result);
-      setCurrentStep('complete');
       
       toast({
         title: "Analysis Complete!",
-        description: "Your financial dashboard is ready.",
+        description: "Redirecting to your dashboard...",
       });
 
-      // Auto-navigate to dashboard after 3 seconds
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 3000);
+      // Auto-navigate to dashboard immediately
+      navigate('/dashboard', { state: { fromAnalysis: true, analysisResult: result } });
 
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -338,36 +335,6 @@ const Analysis = () => {
     );
   }
 
-  // Success/Complete screen for file analysis
-  if (currentStep === 'complete' && analysisResult) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
-          
-          <h2 className="text-2xl font-bold text-primary mb-4">
-            Analysis Complete!
-          </h2>
-          
-          <p className="text-lg text-muted-foreground mb-6">
-            Your profit sensitivity dashboard is ready. Redirecting...
-          </p>
-          
-          <div className="space-y-4">
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-primary">
-                Business Score: {analysisResult.businessScore}/100
-              </div>
-            </Card>
-            
-            <Button onClick={() => navigate('/dashboard')} className="w-full">
-              View Dashboard Now
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Default file upload interface
   return (
