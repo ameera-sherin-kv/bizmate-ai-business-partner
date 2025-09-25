@@ -46,7 +46,7 @@ export const ScenarioSelector = () => {
   const currentScenario = scenarios.find(s => s.id === selectedScenario);
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Scenario Management
