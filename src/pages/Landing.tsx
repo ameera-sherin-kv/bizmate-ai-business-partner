@@ -674,7 +674,7 @@ const Landing = () => {
               </div>
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Pro</CardTitle>
-                <div className="text-4xl font-bold text-primary">$49</div>
+                <div className="text-4xl font-bold text-primary">$35</div>
                 <p className="text-muted-foreground">For growing businesses</p>
               </CardHeader>
               <CardContent className="space-y-4">
