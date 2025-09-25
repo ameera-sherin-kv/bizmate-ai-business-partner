@@ -382,7 +382,7 @@ const Discovery = () => {
   };
 
   const handleProceedToEvaluation = () => {
-    navigate("/analysis");
+    navigate("/analysis", { state: { fromDiscovery: true } });
   };
 
   return (
@@ -410,7 +410,7 @@ const Discovery = () => {
               </Button>
               {completedSections >= 4 && (
                 <Button variant="hero" onClick={handleProceedToEvaluation}>
-                  Get AI Evaluation
+                  View AI Report
                 </Button>
               )}
             </div>
