@@ -10,6 +10,7 @@ import IndustrySelection from "./pages/IndustrySelection";
 import Discovery from "./pages/Discovery";
 import Analysis from "./pages/Analysis";
 import Dashboard from "./pages/Dashboard";
+import BizDocs from "./pages/BizDocs";
 import FailSafe from "./pages/FailSafe";
 import Scaling from "./pages/Scaling";
 import NotFound from "./pages/NotFound";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/discovery" element={<Discovery />} />
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/bizdocs" element={<BizDocs />} />
           <Route path="/failsafe" element={<FailSafe />} />
           <Route path="/scaling" element={<Scaling />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
