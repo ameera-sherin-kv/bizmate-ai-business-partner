@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { DocumentTemplateGrid } from '@/components/bizdocs/DocumentTemplateGrid';
 import { DocumentPreviewPanel } from '@/components/bizdocs/DocumentPreviewPanel';
+import { ProductDemo } from '@/components/bizdocs/ProductDemo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Sparkles } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FileText, Sparkles, Play } from 'lucide-react';
 
 export interface DocumentTemplate {
   id: string;
@@ -70,34 +72,53 @@ const BizDocs = () => {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Templates Grid */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  Document Templates
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DocumentTemplateGrid 
-                  templates={documentTemplates}
-                  onSelectTemplate={setSelectedTemplate}
-                  selectedTemplate={selectedTemplate}
-                />
-              </CardContent>
-            </Card>
-          </div>
+        <Tabs defaultValue="templates" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+            <TabsTrigger value="templates" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Document Templates
+            </TabsTrigger>
+            <TabsTrigger value="demo" className="flex items-center gap-2">
+              <Play className="w-4 h-4" />
+              Product Demo
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Preview Panel */}
-          <div className="lg:col-span-1">
-            <DocumentPreviewPanel 
-              selectedTemplate={selectedTemplate}
-              onClose={() => setSelectedTemplate(null)}
-            />
-          </div>
-        </div>
+          <TabsContent value="templates" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Templates Grid */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      Document Templates
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <DocumentTemplateGrid 
+                      templates={documentTemplates}
+                      onSelectTemplate={setSelectedTemplate}
+                      selectedTemplate={selectedTemplate}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Preview Panel */}
+              <div className="lg:col-span-1">
+                <DocumentPreviewPanel 
+                  selectedTemplate={selectedTemplate}
+                  onClose={() => setSelectedTemplate(null)}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="demo">
+            <ProductDemo />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
