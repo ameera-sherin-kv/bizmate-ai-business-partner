@@ -3,8 +3,10 @@ import { DocumentTemplateGrid } from '@/components/bizdocs/DocumentTemplateGrid'
 import { DocumentPreviewPanel } from '@/components/bizdocs/DocumentPreviewPanel';
 import { ProductDemo } from '@/components/bizdocs/ProductDemo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Sparkles, Play } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileText, Sparkles, Play, ArrowLeft } from 'lucide-react';
 
 export interface DocumentTemplate {
   id: string;
@@ -56,6 +58,16 @@ const BizDocs = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-6">
+        {/* Back to Dashboard CTA */}
+        <div className="flex justify-start">
+          <Link to="/dashboard">
+            <Button variant="ghost" className="flex items-center gap-2 hover-scale">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-4">
