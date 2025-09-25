@@ -5,89 +5,29 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { RegenerateDialog } from './RegenerateDialog';
+import { detailedMockContent } from './mockContent';
 import { 
   Sparkles, 
   Download, 
   FileText, 
   RotateCcw, 
   Lightbulb,
-  X
+  X,
+  Settings
 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface DocumentPreviewPanelProps {
   selectedTemplate: DocumentTemplate | null;
   onClose: () => void;
 }
 
-const mockPreviewContent = {
-  'project-proposal': {
-    title: 'Q1 Growth Initiative Proposal',
-    content: [
-      '📋 Executive Summary',
-      '• Revenue target: $250K increase',
-      '• Timeline: 90 days',
-      '• Key milestones: 3 phases',
-      '',
-      '🎯 Phase 1: Market Research',
-      '• Customer survey deployment',
-      '• Competitor analysis',
-      '• Market sizing validation'
-    ],
-    aiInsight: 'Based on your FailSafe metrics, we emphasized customer acquisition costs. Want us to pivot toward retention strategies instead?'
-  },
-  'pitch-deck': {
-    title: 'Series A Pitch Deck',
-    content: [
-      '🚀 Slide 1: Problem & Solution',
-      '• Market pain point identified',
-      '• Your unique solution approach',
-      '',
-      '📊 Slide 2: Market Opportunity',
-      '• $2.5B addressable market',
-      '• 12% annual growth rate',
-      '',
-      '💰 Slide 3: Business Model',
-      '• SaaS subscription revenue',
-      '• $150 average monthly value'
-    ],
-    aiInsight: 'Based on your Failsafe metrics, we emphasized customer traction in Slide 2. Want us to pivot toward funding ask instead?'
-  },
-  'business-profile': {
-    title: 'Company One-Pager',
-    content: [
-      '🏢 Company Overview',
-      '• Founded: 2023',
-      '• Mission: Streamline business operations',
-      '• Vision: AI-powered efficiency',
-      '',
-      '📈 Key Metrics',
-      '• 150+ active customers',
-      '• 95% customer satisfaction',
-      '• 40% month-over-month growth'
-    ],
-    aiInsight: 'We highlighted your growth metrics prominently. Should we focus more on your unique technology advantages?'
-  },
-  'investor-memo': {
-    title: 'Investment Opportunity Brief',
-    content: [
-      '💼 Investment Thesis',
-      '• Large market opportunity',
-      '• Proven product-market fit',
-      '• Experienced founding team',
-      '',
-      '📊 Traction Highlights',
-      '• 300% revenue growth YoY',
-      '• Enterprise client pipeline',
-      '• Strategic partnerships secured'
-    ],
-    aiInsight: 'We emphasized financial metrics based on your data. Want to highlight team experience or market timing instead?'
-  }
-};
-
 export const DocumentPreviewPanel = ({ selectedTemplate, onClose }: DocumentPreviewPanelProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generated, setGenerated] = useState(false);
+  const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
+  const [currentEmphasis, setCurrentEmphasis] = useState('growth');
 
   if (!selectedTemplate) {
     return (
@@ -105,7 +45,7 @@ export const DocumentPreviewPanel = ({ selectedTemplate, onClose }: DocumentPrev
     );
   }
 
-  const previewData = mockPreviewContent[selectedTemplate.id as keyof typeof mockPreviewContent];
+  const previewData = detailedMockContent[selectedTemplate.id as keyof typeof detailedMockContent];
   const Icon = selectedTemplate.icon;
 
   const handleGenerate = () => {
@@ -116,7 +56,12 @@ export const DocumentPreviewPanel = ({ selectedTemplate, onClose }: DocumentPrev
     }, 2000);
   };
 
-  const handleRegenerate = () => {
+  const handleRegenerate = (emphasis: string, customInstructions?: string) => {
+    setCurrentEmphasis(emphasis);
+    setGenerated(true); // Keep the generated state but with new emphasis
+  };
+
+  const handleQuickRegenerate = () => {
     setGenerated(false);
     handleGenerate();
   };
@@ -183,15 +128,19 @@ export const DocumentPreviewPanel = ({ selectedTemplate, onClose }: DocumentPrev
         ) : (
           <div className="space-y-4">
             {/* Generated Preview */}
-            <div className="bg-card border rounded-lg p-4 space-y-3">
-              <h4 className="font-semibold text-primary">{previewData.title}</h4>
-              <div className="text-sm space-y-1">
-                {previewData.content.map((line, index) => (
-                  <div key={index} className={line === '' ? 'h-2' : ''}>
-                    {line}
-                  </div>
-                ))}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-primary">{previewData.title}</h4>
+                <Badge variant="outline" className="text-xs">
+                  Emphasis: {currentEmphasis.charAt(0).toUpperCase() + currentEmphasis.slice(1)}
+                </Badge>
               </div>
+              
+              <ScrollArea className="h-80 w-full rounded-lg border bg-card p-4">
+                <div className="text-sm space-y-2 whitespace-pre-line leading-relaxed">
+                  {previewData.content}
+                </div>
+              </ScrollArea>
             </div>
 
             {/* AI Insight */}
@@ -208,35 +157,22 @@ export const DocumentPreviewPanel = ({ selectedTemplate, onClose }: DocumentPrev
             <div className="space-y-3">
               <div className="flex gap-2">
                 <Button 
-                  onClick={handleRegenerate}
+                  onClick={handleQuickRegenerate}
                   variant="outline"
                   className="flex-1"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  Regenerate
+                  Quick Regenerate
                 </Button>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      Regenerate with...
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => handleRegenerate()}>
-                      Sustainability Focus
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRegenerate()}>
-                      Growth Emphasis
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRegenerate()}>
-                      Revenue Focus
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRegenerate()}>
-                      Brand Identity
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button 
+                  onClick={() => setShowRegenerateDialog(true)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Regenerate with...
+                </Button>
               </div>
 
               {/* Export Options */}
@@ -261,6 +197,13 @@ export const DocumentPreviewPanel = ({ selectedTemplate, onClose }: DocumentPrev
           </div>
         )}
       </CardContent>
+
+      <RegenerateDialog
+        isOpen={showRegenerateDialog}
+        onClose={() => setShowRegenerateDialog(false)}
+        onRegenerate={handleRegenerate}
+        documentType={selectedTemplate.title}
+      />
     </Card>
   );
 };
