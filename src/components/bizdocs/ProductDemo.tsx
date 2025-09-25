@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Upload, FileText, Sparkles, BarChart3, Download, ArrowRight, CheckCircle, Zap, TrendingUp, Trash2, Edit3, Plus } from 'lucide-react';
 interface DemoStep {
   id: number;
@@ -46,33 +47,70 @@ const UploadStep = ({
 }) => {
   const [uploadedFiles, setUploadedFiles] = useState<typeof rawFiles>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
   const handleFileUpload = useCallback(() => {
-    setUploadedFiles(rawFiles);
+    setIsProcessing(true);
+    // Simulate file processing
+    setTimeout(() => {
+      setUploadedFiles(rawFiles);
+      setIsProcessing(false);
+    }, 1500);
   }, []);
+  
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
+  
   const handleDragLeave = () => {
     setIsDragging(false);
   };
+  
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     handleFileUpload();
   };
+  
   const removeFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
-  return <div className="space-y-6">
+  
+  return (
+    <div className="space-y-6">
       {/* Upload Area */}
-      <div className={`h-64 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border-2 border-dashed transition-all cursor-pointer ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20 hover:border-muted-foreground/40'}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={handleFileUpload}>
+      <div 
+        className={`h-64 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
+          isDragging 
+            ? 'border-primary bg-primary/5' 
+            : 'border-muted-foreground/20 hover:border-muted-foreground/40'
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={handleFileUpload}
+      >
         <div className="text-center space-y-4">
-          <Upload className={`w-12 h-12 mx-auto transition-colors ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
-          <div>
-            <p className="text-lg font-medium">Drop files here or click to upload</p>
-            <p className="text-sm text-muted-foreground">PDF invoices, Excel sheets, bank statements, receipts</p>
-          </div>
+          {isProcessing ? (
+            <>
+              <Sparkles className="w-12 h-12 mx-auto text-primary animate-spin" />
+              <div>
+                <p className="text-lg font-medium">Processing files...</p>
+                <p className="text-sm text-muted-foreground">AI is analyzing your documents</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <Upload className={`w-12 h-12 mx-auto transition-colors ${
+                isDragging ? 'text-primary' : 'text-muted-foreground'
+              }`} />
+              <div>
+                <p className="text-lg font-medium">Drop files here or click to upload</p>
+                <p className="text-sm text-muted-foreground">PDF invoices, Excel sheets, bank statements, receipts</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -103,12 +141,26 @@ const UploadStep = ({
 
       {/* Action Buttons */}
       <div className="flex justify-end">
-        <Button onClick={onNext} disabled={uploadedFiles.length === 0} className="min-w-32">
-          Process Files
-          <ArrowRight className="w-4 h-4 ml-2" />
+        <Button 
+          onClick={onNext} 
+          disabled={uploadedFiles.length === 0 || isProcessing} 
+          className="min-w-32"
+        >
+          {isProcessing ? (
+            <>
+              <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              Process Files
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </>
+          )}
         </Button>
       </div>
-    </div>;
+    </div>
+  );
 };
 const messyData = [{
   id: 1,
@@ -604,25 +656,64 @@ const demoSteps: DemoStep[] = [{
 }];
 export const ProductDemo = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const nextStep = () => {
     if (currentStep < demoSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      setIsLoading(true);
+      // Simulate processing time based on step
+      const loadingTime = currentStep === 0 ? 2000 : currentStep === 1 ? 1500 : 1200;
+      setTimeout(() => {
+        setCurrentStep(currentStep + 1);
+        setIsLoading(false);
+      }, loadingTime);
     }
   };
+  
   const previousStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
+  
   const goToStep = (stepIndex: number) => {
-    setCurrentStep(stepIndex);
+    if (stepIndex <= currentStep) {
+      setCurrentStep(stepIndex);
+    }
   };
+  
   const CurrentStepComponent = demoSteps[currentStep].component;
-  return <Card className="w-full max-w-5xl mx-auto">
+  
+  const LoadingComponent = () => (
+    <div className="space-y-6 text-center">
+      <div className="flex items-center justify-center">
+        <Sparkles className="w-16 h-16 text-primary animate-spin" />
+      </div>
+      <div className="space-y-2">
+        <h4 className="text-xl font-semibold">Processing your data...</h4>
+        <p className="text-muted-foreground">
+          {currentStep === 0 && "BizMate AI is analyzing your uploaded files"}
+          {currentStep === 1 && "Cleaning and normalizing financial data"}
+          {currentStep === 2 && "Auto-categorizing transactions"}
+          {currentStep === 3 && "Generating forecasts and scenarios"}
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-3/4 mx-auto" />
+        <Skeleton className="h-4 w-1/2 mx-auto" />
+        <Skeleton className="h-4 w-2/3 mx-auto" />
+      </div>
+    </div>
+  );
+  
+  return (
+    <Card className="w-full max-w-5xl mx-auto">
       <CardContent className="p-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2">Interactive Financial Intelligence</h2>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2">
+            Interactive Financial Intelligence
+          </h2>
           <p className="text-muted-foreground">
             Experience how BizMate AI transforms your financial data into actionable insights
           </p>
@@ -630,14 +721,33 @@ export const ProductDemo = () => {
 
         {/* Progress Steps */}
         <div className="flex justify-between mb-8">
-          {demoSteps.map((step, index) => <button key={step.id} onClick={() => goToStep(index)} className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-all ${index === currentStep ? 'bg-primary/10 text-primary' : index < currentStep ? 'text-green-600' : 'text-muted-foreground hover:text-foreground'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index === currentStep ? 'bg-primary text-primary-foreground' : index < currentStep ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'}`}>
+          {demoSteps.map((step, index) => (
+            <button 
+              key={step.id} 
+              onClick={() => goToStep(index)} 
+              disabled={index > currentStep || isLoading}
+              className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-all ${
+                index === currentStep 
+                  ? 'bg-primary/10 text-primary' 
+                  : index < currentStep 
+                    ? 'text-green-600 hover:bg-green-50' 
+                    : 'text-muted-foreground hover:text-foreground'
+              } ${index > currentStep ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                index === currentStep 
+                  ? 'bg-primary text-primary-foreground' 
+                  : index < currentStep 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-muted text-muted-foreground'
+              }`}>
                 {index < currentStep ? <CheckCircle className="w-4 h-4" /> : index + 1}
               </div>
               <span className="text-xs font-medium text-center max-w-24">
                 {step.title}
               </span>
-            </button>)}
+            </button>
+          ))}
         </div>
 
         {/* Current Step */}
@@ -648,8 +758,18 @@ export const ProductDemo = () => {
 
         {/* Demo Content */}
         <div className="border rounded-lg p-6 min-h-96">
-          <CurrentStepComponent onNext={nextStep} onPrevious={previousStep} isFirst={currentStep === 0} isLast={currentStep === demoSteps.length - 1} />
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <CurrentStepComponent 
+              onNext={nextStep} 
+              onPrevious={previousStep} 
+              isFirst={currentStep === 0} 
+              isLast={currentStep === demoSteps.length - 1} 
+            />
+          )}
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
