@@ -23,38 +23,56 @@ interface Alert {
   description: string;
   severity: "green" | "yellow" | "red";
   icon: React.ReactNode;
+  category: "sales" | "costs";
 }
 
-const alerts: Alert[] = [
+const salesAlerts: Alert[] = [
   {
     id: 1,
     title: "Sales Performance Stable",
     description: "Monthly sales tracking well vs. targets",
     severity: "green",
-    icon: <CheckCircle className="w-5 h-5" />
+    icon: <CheckCircle className="w-5 h-5" />,
+    category: "sales"
   },
   {
     id: 2,
-    title: "High Ad Spend Alert",
-    description: "Marketing costs 25% above average with low conversion rates",
-    severity: "yellow",
-    icon: <AlertTriangle className="w-5 h-5" />
-  },
-  {
-    id: 3,
-    title: "Inventory Running Low",
-    description: "Organic Cotton Shirts below threshold (12 units left)",
-    severity: "red",
-    icon: <XCircle className="w-5 h-5" />
-  },
-  {
-    id: 4,
     title: "Customer Acquisition Improving",
     description: "New customer rate increased by 15% this week",
     severity: "green",
-    icon: <CheckCircle className="w-5 h-5" />
+    icon: <CheckCircle className="w-5 h-5" />,
+    category: "sales"
   }
 ];
+
+const costAlerts: Alert[] = [
+  {
+    id: 3,
+    title: "Ad Spend Overshoot",
+    description: "$500 above budget this month",
+    severity: "yellow",
+    icon: <AlertTriangle className="w-5 h-5" />,
+    category: "costs"
+  },
+  {
+    id: 4,
+    title: "Inventory Overstock",
+    description: "120 unsold units tying up capital",
+    severity: "red",
+    icon: <XCircle className="w-5 h-5" />,
+    category: "costs"
+  },
+  {
+    id: 5,
+    title: "Subscription Waste",
+    description: "Paying $200/month for unused SaaS tool",
+    severity: "yellow",
+    icon: <AlertTriangle className="w-5 h-5" />,
+    category: "costs"
+  }
+];
+
+const allAlerts = [...salesAlerts, ...costAlerts];
 
 const FailSafe = () => {
   const navigate = useNavigate();
@@ -230,20 +248,20 @@ const FailSafe = () => {
                 <p className="text-muted-foreground mb-4">
                   Your business is performing well overall with some areas requiring attention.
                 </p>
-                <div className="flex gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span>2 Good</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span>1 Warning</span>
-                  </div>here are
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span>1 Critical</span>
-                  </div>
-                </div>
+                 <div className="flex gap-4 text-sm">
+                   <div className="flex items-center gap-2">
+                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                     <span>2 Good</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                     <span>2 Warning</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                     <span>1 Critical</span>
+                   </div>
+                 </div>
               </div>
             </div>
           </CardContent>
@@ -258,18 +276,63 @@ const FailSafe = () => {
             <CardDescription>Real-time monitoring of your business metrics</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {alerts.map((alert, index) => (
-                <Card
-                  key={alert.id}
-                  className={`${getSeverityColor(alert.severity)} transition-all hover:shadow-md ${
-                    showCards 
-                      ? 'animate-scale-in opacity-100 translate-y-0' 
-                      : 'opacity-0 translate-y-4 scale-95'
-                  }`}
-                  style={{
-                    animationDelay: showCards ? `${index * 200}ms` : '0ms'
-                  }}
+            {/* Sales Related Section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4 text-primary">Sales Related</h3>
+              <div className="space-y-4">
+                {salesAlerts.map((alert, index) => (
+                  <Card
+                    key={alert.id}
+                    className={`${getSeverityColor(alert.severity)} transition-all hover:shadow-md ${
+                      showCards 
+                        ? 'animate-scale-in opacity-100 translate-y-0' 
+                        : 'opacity-0 translate-y-4 scale-95'
+                    }`}
+                    style={{
+                      animationDelay: showCards ? `${index * 200}ms` : '0ms'
+                    }}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className={getSeverityTextColor(alert.severity)}>
+                          {alert.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className={`font-semibold ${getSeverityTextColor(alert.severity)}`}>
+                            {alert.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {alert.description}
+                          </p>
+                        </div>
+                        <Badge 
+                          variant="outline" 
+                          className={`${getSeverityTextColor(alert.severity)} border-current`}
+                        >
+                          {alert.severity === "green" ? "Good" : alert.severity === "yellow" ? "Warning" : "Critical"}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Costs Related Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-primary">Costs Related</h3>
+              <div className="space-y-4">
+                 {costAlerts.map((alert, index) => (
+                  <Card
+                    key={alert.id}
+                    className={`${getSeverityColor(alert.severity)} transition-all hover:shadow-md ${
+                      showCards 
+                        ? 'animate-scale-in opacity-100 translate-y-0' 
+                        : 'opacity-0 translate-y-4 scale-95'
+                    }`}
+                    style={{
+                      animationDelay: showCards ? `${(salesAlerts.length + index) * 200}ms` : '0ms'
+                    }}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -292,8 +355,9 @@ const FailSafe = () => {
                       </Badge>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
+                 </Card>
+               ))}
+              </div>
             </div>
           </CardContent>
         </Card>
