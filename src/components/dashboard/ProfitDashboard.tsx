@@ -56,7 +56,7 @@ export const ProfitDashboard = () => {
       <SummaryKPIs />
 
       {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         {/* Key Drivers Panel */}
         <div className="lg:col-span-1">
           <KeyDriversPanel />
