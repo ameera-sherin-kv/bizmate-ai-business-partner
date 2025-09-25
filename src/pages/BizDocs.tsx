@@ -80,7 +80,7 @@ const BizDocs = () => {
             </TabsTrigger>
             <TabsTrigger value="demo" className="flex items-center gap-2">
               <Play className="w-4 h-4" />
-              Product Demo
+              Interactive Financial Intelligence
             </TabsTrigger>
           </TabsList>
 
