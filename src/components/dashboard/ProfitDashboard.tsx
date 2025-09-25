@@ -56,22 +56,22 @@ export const ProfitDashboard = () => {
       <SummaryKPIs />
 
       {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Key Drivers Panel */}
         <div className="lg:col-span-1">
           <KeyDriversPanel />
         </div>
-
+        {/* Scenario Selector */}
+        <div className="lg:col-span-1">
+          <ScenarioSelector />
+        </div>      </div>
         {/* Sensitivity Matrix */}
         <div className="lg:col-span-1">
           <SensitivityMatrix />
         </div>
 
-        {/* Scenario Selector */}
-        <div className="lg:col-span-1">
-          <ScenarioSelector />
-        </div>
-      </div>
+
+
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
