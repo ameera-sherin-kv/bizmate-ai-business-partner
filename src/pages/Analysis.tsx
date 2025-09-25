@@ -20,6 +20,9 @@ const Analysis = () => {
   const [analysisResult, setAnalysisResult] = useState<FinanceAnalysisResult | null>(null);
   const [currentStep, setCurrentStep] = useState<'upload' | 'processing' | 'evaluation'>('upload');
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isAnimatingCards, setIsAnimatingCards] = useState(false);
+  const [visibleCards, setVisibleCards] = useState<number[]>([]);
 
   // Check if coming from discovery page for evaluation mode
   useEffect(() => {
@@ -27,11 +30,27 @@ const Analysis = () => {
       setCurrentStep('processing');
       setIsProcessing(true);
       
-      // Simulate AI report generation
+      // Simulate AI report generation with animated messages
+      const reportMessages = [
+        "Analyzing market trends...",
+        "Spotting risks and opportunities...", 
+        "Building roadmap recommendations...",
+        "Evaluating business viability...",
+        "Generating insights..."
+      ];
+      
+      let messageIndex = 0;
       const generateReport = async () => {
         for (let i = 0; i <= 100; i += 10) {
           setLoadingProgress(i);
-          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Change message every 20% progress
+          if (i % 20 === 0 && messageIndex < reportMessages.length) {
+            setCurrentMessageIndex(messageIndex);
+            messageIndex++;
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 300));
         }
         
         // Mock evaluation result
@@ -62,6 +81,15 @@ const Analysis = () => {
         setAnalysisResult(mockResult);
         setCurrentStep('evaluation');
         setIsProcessing(false);
+        
+        // Start animations for evaluation mode
+        setTimeout(() => {
+          setIsAnimatingCards(true);
+          // Show cards one by one
+          setTimeout(() => setVisibleCards([0]), 500);
+          setTimeout(() => setVisibleCards([0, 1]), 800);
+          setTimeout(() => setVisibleCards([0, 1, 2]), 1100);
+        }, 500);
       };
       
       generateReport();
@@ -76,7 +104,6 @@ const Analysis = () => {
     "Preparing your dashboard..."
   ];
 
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   const handleFilesUploaded = (files: UploadedFile[]) => {
     setUploadedFiles(files);
@@ -148,11 +175,17 @@ const Analysis = () => {
           </div>
           
           <h2 className="text-2xl font-bold text-primary mb-4">
-            Generating AI Report...
+            Generating your AI Business Report...
           </h2>
           
-          <p className="text-lg text-muted-foreground mb-6">
-            Analyzing your business plan for insights
+          <p className="text-lg text-muted-foreground mb-6 animate-fade-in">
+            {[
+              "Analyzing market trends...",
+              "Spotting risks and opportunities...", 
+              "Building roadmap recommendations...",
+              "Evaluating business viability...",
+              "Generating insights..."
+            ][currentMessageIndex]}
           </p>
           
           <Progress value={loadingProgress} className="w-full mb-4" />
@@ -203,12 +236,17 @@ const Analysis = () => {
             </div>
           </div>
 
-          {/* Business Viability Score */}
-          <Card className="mb-8 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+          {/* Business Viability Score with Animation */}
+          <Card className={`mb-8 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20 transition-all duration-700 ${isAnimatingCards ? 'animate-scale-in' : 'opacity-0'}`}>
             <CardContent className="p-8 text-center">
-              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-4">
-                <span className="text-3xl font-bold text-primary">{analysisResult.businessScore}</span>
-                <span className="text-lg text-primary/70">/100</span>
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-4 relative">
+                <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
+                <div 
+                  className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"
+                  style={{ animationDuration: '2s' }}
+                ></div>
+                <span className="text-3xl font-bold text-primary animate-fade-in">{analysisResult.businessScore}</span>
+                <span className="text-lg text-primary/70 animate-fade-in">/100</span>
               </div>
               <h2 className="text-2xl font-bold mb-2">Overall Business Viability Score</h2>
               <p className="text-lg text-muted-foreground">
@@ -219,10 +257,12 @@ const Analysis = () => {
             </CardContent>
           </Card>
 
-          {/* Analysis Cards */}
+          {/* Analysis Cards with Slide Animation */}
           <div className="grid lg:grid-cols-3 gap-6 mb-8">
             {/* What Went Well */}
-            <Card className="border-green-200 dark:border-green-800">
+            <Card className={`border-green-200 dark:border-green-800 transition-all duration-500 ${
+              visibleCards.includes(0) ? 'animate-slide-in-right opacity-100' : 'opacity-0 translate-x-full'
+            }`}>
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-400">
                   <CheckCircle className="w-5 h-5" />
@@ -243,7 +283,9 @@ const Analysis = () => {
             </Card>
 
             {/* What Needs Improvement */}
-            <Card className="border-yellow-200 dark:border-yellow-800">
+            <Card className={`border-yellow-200 dark:border-yellow-800 transition-all duration-500 delay-300 ${
+              visibleCards.includes(1) ? 'animate-slide-in-right opacity-100' : 'opacity-0 translate-x-full'
+            }`}>
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
                   <AlertCircle className="w-5 h-5" />
@@ -264,7 +306,9 @@ const Analysis = () => {
             </Card>
 
             {/* Trial & Error Areas */}
-            <Card className="border-blue-200 dark:border-blue-800">
+            <Card className={`border-blue-200 dark:border-blue-800 transition-all duration-500 delay-700 ${
+              visibleCards.includes(2) ? 'animate-slide-in-right opacity-100' : 'opacity-0 translate-x-full'
+            }`}>
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
                   <TestTube className="w-5 h-5" />
