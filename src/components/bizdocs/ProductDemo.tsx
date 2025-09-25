@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { 
   Upload, 
   FileText, 
@@ -13,16 +14,16 @@ import {
   CheckCircle,
   Zap,
   TrendingUp,
-  Play,
-  Pause
+  Trash2,
+  Edit3,
+  Plus
 } from 'lucide-react';
 
 interface DemoStep {
   id: number;
   title: string;
   subtitle: string;
-  duration: number;
-  component: React.ComponentType<{ isActive: boolean; progress: number }>;
+  component: React.ComponentType<{ onNext: () => void; onPrevious: () => void; isFirst: boolean; isLast: boolean }>;
 }
 
 const rawFiles = [
@@ -32,296 +33,613 @@ const rawFiles = [
   { name: 'receipts_misc.jpg', type: 'Marketing Spend', color: 'bg-purple-500' }
 ];
 
-const messyData = [
-  ['Employee Pay', '$5,200', 'Sept'],
-  ['RENT PAYMENT', '$2,800', '9/1'],
-  ['Marketing - FB Ads', '$850', 'September'],
-  ['Salary - John', '$3,200', '09/15']
-];
+// Step 1: Interactive File Upload
+const UploadStep = ({ onNext, isLast }: { onNext: () => void; onPrevious: () => void; isFirst: boolean; isLast: boolean }) => {
+  const [uploadedFiles, setUploadedFiles] = useState<typeof rawFiles>([]);
+  const [isDragging, setIsDragging] = useState(false);
 
-const cleanData = [
-  ['Payroll', '$5,200', '2024-09'],
-  ['Rent', '$2,800', '2024-09'],
-  ['Marketing', '$850', '2024-09'],
-  ['Payroll', '$3,200', '2024-09']
-];
+  const handleFileUpload = useCallback(() => {
+    setUploadedFiles(rawFiles);
+  }, []);
 
-// Step 1: Raw Data Upload
-const UploadStep = ({ isActive, progress }: { isActive: boolean; progress: number }) => {
-  const [taggedFiles, setTaggedFiles] = useState<string[]>([]);
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
-  useEffect(() => {
-    if (isActive && progress > 20) {
-      const timer = setInterval(() => {
-        setTaggedFiles(prev => {
-          if (prev.length < rawFiles.length) {
-            return [...prev, rawFiles[prev.length].name];
-          }
-          return prev;
-        });
-      }, 800);
-      return () => clearInterval(timer);
-    }
-  }, [isActive, progress]);
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    handleFileUpload();
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   return (
-    <div className="h-80 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border-2 border-dashed border-muted-foreground/20">
-      <div className="text-center space-y-6">
-        <div className="grid grid-cols-2 gap-4 max-w-md">
-          {rawFiles.map((file, index) => (
-            <div
-              key={file.name}
-              className={`p-4 bg-card border rounded-lg transition-all duration-500 ${
-                taggedFiles.includes(file.name) 
-                  ? 'scale-105 shadow-md border-primary' 
-                  : 'hover:shadow-sm'
-              }`}
-            >
-              <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-xs font-medium truncate">{file.name}</p>
-              {taggedFiles.includes(file.name) && (
-                <Badge className={`mt-2 text-xs ${file.color} text-white animate-fade-in`}>
+    <div className="space-y-6">
+      {/* Upload Area */}
+      <div 
+        className={`h-64 flex items-center justify-center bg-gradient-to-br from-muted/30 to-muted/10 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
+          isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/20 hover:border-muted-foreground/40'
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={handleFileUpload}
+      >
+        <div className="text-center space-y-4">
+          <Upload className={`w-12 h-12 mx-auto transition-colors ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+          <div>
+            <p className="text-lg font-medium">Drop files here or click to upload</p>
+            <p className="text-sm text-muted-foreground">PDF invoices, Excel sheets, bank statements, receipts</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Uploaded Files */}
+      {uploadedFiles.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="font-medium flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            Uploaded Files ({uploadedFiles.length})
+          </h4>
+          <div className="grid grid-cols-2 gap-4">
+            {uploadedFiles.map((file, index) => (
+              <div key={index} className="p-4 bg-card border rounded-lg group hover:shadow-md transition-all">
+                <div className="flex items-start justify-between mb-2">
+                  <FileText className="w-6 h-6 text-muted-foreground" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(index);
+                    }}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+                <p className="text-sm font-medium truncate mb-2">{file.name}</p>
+                <Badge className={`text-xs ${file.color} text-white`}>
                   {file.type}
                 </Badge>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
-        
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <Upload className="w-4 h-4" />
-          <span>AI automatically tags and categorizes files</span>
-          <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex justify-end">
+        <Button 
+          onClick={onNext} 
+          disabled={uploadedFiles.length === 0}
+          className="min-w-32"
+        >
+          Process Files
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
       </div>
     </div>
   );
 };
 
-// Step 2: Cleaning & Normalization
-const CleaningStep = ({ isActive, progress }: { isActive: boolean; progress: number }) => {
-  const [showClean, setShowClean] = useState(false);
+const messyData = [
+  { id: 1, original: 'Employee Pay', amount: '$5,200', date: 'Sept', cleaned: 'Payroll', cleanedDate: '2024-09' },
+  { id: 2, original: 'RENT PAYMENT', amount: '$2,800', date: '9/1', cleaned: 'Rent', cleanedDate: '2024-09' },
+  { id: 3, original: 'Marketing - FB Ads', amount: '$850', date: 'September', cleaned: 'Marketing', cleanedDate: '2024-09' },
+  { id: 4, original: 'Salary - John', amount: '$3,200', date: '09/15', cleaned: 'Payroll', cleanedDate: '2024-09' }
+];
 
-  useEffect(() => {
-    if (isActive && progress > 50) {
-      const timer = setTimeout(() => setShowClean(true), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isActive, progress]);
+// Step 2: Interactive Data Cleaning
+const CleaningStep = ({ onNext, onPrevious }: { onNext: () => void; onPrevious: () => void; isFirst: boolean; isLast: boolean }) => {
+  const [cleanedData, setCleanedData] = useState(messyData);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const startEdit = (id: number, currentValue: string) => {
+    setEditingId(id);
+    setEditValue(currentValue);
+  };
+
+  const saveEdit = (id: number) => {
+    setCleanedData(prev => prev.map(item => 
+      item.id === id ? { ...item, cleaned: editValue } : item
+    ));
+    setEditingId(null);
+    setEditValue('');
+  };
+
+  const autoClean = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setCleanedData(prev => prev.map(item => ({ ...item, cleaned: item.cleaned })));
+      setIsProcessing(false);
+    }, 1500);
+  };
 
   return (
-    <div className="h-80 flex items-center justify-center space-x-8">
-      {/* Messy Data */}
-      <div className={`transition-all duration-1000 ${showClean ? 'opacity-50 scale-95' : 'opacity-100'}`}>
-        <h4 className="text-sm font-medium mb-3 text-destructive">Raw Data</h4>
-        <div className="space-y-2">
-          {messyData.map((row, index) => (
-            <div key={index} className="flex gap-2 text-xs p-2 bg-destructive/10 border border-destructive/20 rounded">
-              <span className="w-20 truncate font-mono">{row[0]}</span>
-              <span className="w-16 font-mono">{row[1]}</span>
-              <span className="w-16 font-mono text-muted-foreground">{row[2]}</span>
+    <div className="space-y-6">
+      {/* Data Table */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium">Raw Financial Data</h4>
+          <Button 
+            onClick={autoClean} 
+            disabled={isProcessing}
+            variant="outline"
+            size="sm"
+          >
+            {isProcessing ? (
+              <>
+                <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                Cleaning...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 mr-2" />
+                Auto-Clean All
+              </>
+            )}
+          </Button>
+        </div>
+
+        <div className="border rounded-lg overflow-hidden">
+          <div className="grid grid-cols-5 gap-4 p-3 bg-muted font-medium text-sm">
+            <span>Original</span>
+            <span>Amount</span>
+            <span>Date</span>
+            <span>Cleaned</span>
+            <span>Actions</span>
+          </div>
+          
+          {cleanedData.map((row) => (
+            <div key={row.id} className="grid grid-cols-5 gap-4 p-3 border-t hover:bg-muted/50">
+              <span className="text-sm text-destructive font-mono">{row.original}</span>
+              <span className="text-sm font-mono">{row.amount}</span>
+              <span className="text-sm font-mono text-muted-foreground">{row.date}</span>
+              <div className="flex items-center gap-2">
+                {editingId === row.id ? (
+                  <Input
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    className="h-6 text-xs"
+                    onKeyDown={(e) => e.key === 'Enter' && saveEdit(row.id)}
+                    autoFocus
+                  />
+                ) : (
+                  <span className="text-sm font-medium text-green-600">{row.cleaned}</span>
+                )}
+              </div>
+              <div className="flex gap-1">
+                {editingId === row.id ? (
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-6 w-6 p-0"
+                    onClick={() => saveEdit(row.id)}
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                  </Button>
+                ) : (
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-6 w-6 p-0"
+                    onClick={() => startEdit(row.id, row.cleaned)}
+                  >
+                    <Edit3 className="w-3 h-3" />
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Arrow */}
-      <div className="flex flex-col items-center">
-        <ArrowRight className={`w-6 h-6 text-primary transition-all duration-500 ${
-          showClean ? 'animate-pulse' : ''
-        }`} />
-        <Zap className="w-4 h-4 text-primary mt-2" />
-      </div>
-
-      {/* Clean Data */}
-      <div className={`transition-all duration-1000 ${showClean ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-        <h4 className="text-sm font-medium mb-3 text-green-600">Normalized</h4>
-        <div className="space-y-2">
-          {cleanData.map((row, index) => (
-            <div key={index} className="flex gap-2 text-xs p-2 bg-green-50 border border-green-200 rounded">
-              <span className="w-20 font-mono font-medium">{row[0]}</span>
-              <span className="w-16 font-mono">{row[1]}</span>
-              <span className="w-16 font-mono text-muted-foreground">{row[2]}</span>
-            </div>
-          ))}
-        </div>
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onPrevious}>
+          Back
+        </Button>
+        <Button onClick={onNext}>
+          Categorize Data
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
       </div>
     </div>
   );
 };
 
-// Step 3: Categorization & Mapping
-const CategorizationStep = ({ isActive, progress }: { isActive: boolean; progress: number }) => {
-  const [showReports, setShowReports] = useState(false);
+// Step 3: Interactive Categorization
+const CategorizationStep = ({ onNext, onPrevious }: { onNext: () => void; onPrevious: () => void; isFirst: boolean; isLast: boolean }) => {
+  const [categories, setCategories] = useState([
+    { id: 1, name: 'Payroll', amount: 8400, transactions: 2, color: 'bg-blue-500' },
+    { id: 2, name: 'Rent', amount: 2800, transactions: 1, color: 'bg-orange-500' },
+    { id: 3, name: 'Marketing', amount: 850, transactions: 1, color: 'bg-purple-500' }
+  ]);
 
-  useEffect(() => {
-    if (isActive && progress > 30) {
-      const timer = setTimeout(() => setShowReports(true), 1200);
-      return () => clearTimeout(timer);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [showAddCategory, setShowAddCategory] = useState(false);
+
+  const addCategory = () => {
+    if (newCategoryName.trim()) {
+      const colors = ['bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-pink-500'];
+      setCategories(prev => [...prev, {
+        id: Date.now(),
+        name: newCategoryName.trim(),
+        amount: 0,
+        transactions: 0,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }]);
+      setNewCategoryName('');
+      setShowAddCategory(false);
     }
-  }, [isActive, progress]);
+  };
 
-  const categories = [
-    { name: 'Payroll', amount: '$8,400', color: 'bg-blue-500' },
-    { name: 'Rent', amount: '$2,800', color: 'bg-orange-500' },
-    { name: 'Marketing', amount: '$850', color: 'bg-purple-500' }
+  const removeCategory = (id: number) => {
+    setCategories(prev => prev.filter(cat => cat.id !== id));
+  };
+
+  const totalAmount = categories.reduce((sum, cat) => sum + cat.amount, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* Categories Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium">Financial Categories</h4>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowAddCategory(!showAddCategory)}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Category
+            </Button>
+          </div>
+
+          {showAddCategory && (
+            <div className="flex gap-2 p-3 bg-muted/50 rounded-lg">
+              <Input
+                placeholder="Category name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addCategory()}
+                className="flex-1"
+              />
+              <Button size="sm" onClick={addCategory}>Add</Button>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {categories.map((category) => (
+              <div key={category.id} className="flex items-center justify-between p-4 bg-card border rounded-lg group">
+                <div className="flex items-center gap-3">
+                  <div className={`w-4 h-4 rounded-full ${category.color}`} />
+                  <div>
+                    <span className="font-medium">{category.name}</span>
+                    <p className="text-xs text-muted-foreground">{category.transactions} transactions</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-medium">${category.amount.toLocaleString()}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0"
+                    onClick={() => removeCategory(category.id)}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="space-y-4">
+          <h4 className="font-medium">Financial Summary</h4>
+          <div className="p-4 bg-card border rounded-lg space-y-3">
+            <div className="flex justify-between text-sm">
+              <span>Total Expenses</span>
+              <span className="font-mono">${totalAmount.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Categories</span>
+              <span className="font-mono">{categories.length}</span>
+            </div>
+            <div className="flex justify-between text-sm font-medium text-green-600">
+              <span>Ready for Reports</span>
+              <CheckCircle className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onPrevious}>
+          Back
+        </Button>
+        <Button onClick={onNext}>
+          Generate Forecasts
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Step 4: Interactive Forecasting
+const ForecastingStep = ({ onNext, onPrevious }: { onNext: () => void; onPrevious: () => void; isFirst: boolean; isLast: boolean }) => {
+  const [rentAdjustment, setRentAdjustment] = useState([20]);
+  const [marketingBudget, setMarketingBudget] = useState([15]);
+  const [revenueGrowth, setRevenueGrowth] = useState([25]);
+  
+  const baseValues = {
+    rent: 2800,
+    marketing: 850,
+    revenue: 15000
+  };
+
+  const calculateProjections = () => {
+    const adjustedRent = baseValues.rent * (1 + rentAdjustment[0] / 100);
+    const adjustedMarketing = baseValues.marketing * (1 + marketingBudget[0] / 100);
+    const adjustedRevenue = baseValues.revenue * (1 + revenueGrowth[0] / 100);
+    
+    return {
+      rent: adjustedRent,
+      marketing: adjustedMarketing,
+      revenue: adjustedRevenue,
+      netProfit: adjustedRevenue - adjustedRent - adjustedMarketing - 8400 // Fixed payroll
+    };
+  };
+
+  const projections = calculateProjections();
+
+  return (
+    <div className="space-y-6">
+      {/* Interactive Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Rent Adjustment</span>
+            <Badge variant="outline">{rentAdjustment[0] > 0 ? '+' : ''}{rentAdjustment[0]}%</Badge>
+          </div>
+          <Slider
+            value={rentAdjustment}
+            onValueChange={setRentAdjustment}
+            max={50}
+            min={-30}
+            step={5}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground">
+            Current: ${projections.rent.toLocaleString()}
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Marketing Budget</span>
+            <Badge variant="outline">{marketingBudget[0] > 0 ? '+' : ''}{marketingBudget[0]}%</Badge>
+          </div>
+          <Slider
+            value={marketingBudget}
+            onValueChange={setMarketingBudget}
+            max={100}
+            min={-50}
+            step={5}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground">
+            Current: ${projections.marketing.toLocaleString()}
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Revenue Growth</span>
+            <Badge variant="outline">{revenueGrowth[0] > 0 ? '+' : ''}{revenueGrowth[0]}%</Badge>
+          </div>
+          <Slider
+            value={revenueGrowth}
+            onValueChange={setRevenueGrowth}
+            max={100}
+            min={-20}
+            step={5}
+            className="w-full"
+          />
+          <p className="text-xs text-muted-foreground">
+            Current: ${projections.revenue.toLocaleString()}
+          </p>
+        </div>
+      </div>
+
+      {/* Financial Projections */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 bg-card border rounded-lg">
+          <h4 className="font-medium mb-3 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-green-500" />
+            Monthly Projections
+          </h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Revenue</span>
+              <span className="font-mono text-green-600">${projections.revenue.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Expenses</span>
+              <span className="font-mono text-red-600">-${(projections.rent + projections.marketing + 8400).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between font-medium pt-2 border-t">
+              <span>Net Profit</span>
+              <span className={`font-mono ${projections.netProfit > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                ${projections.netProfit.toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 bg-card border rounded-lg">
+          <h4 className="font-medium mb-3">Scenario Analysis</h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Break-even Point</span>
+              <span className="font-mono">Month 8</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Cash Runway</span>
+              <span className="font-mono">14 months</span>
+            </div>
+            <div className="flex justify-between">
+              <span>ROI Projection</span>
+              <span className="font-mono text-green-600">285%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onPrevious}>
+          Back
+        </Button>
+        <Button onClick={onNext}>
+          Export Model
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Step 5: Interactive Export
+const ExportStep = ({ onPrevious }: { onNext: () => void; onPrevious: () => void; isFirst: boolean; isLast: boolean }) => {
+  const [selectedFormat, setSelectedFormat] = useState('pdf');
+  const [includeCharts, setIncludeCharts] = useState(true);
+  const [includeProjections, setIncludeProjections] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exported, setExported] = useState(false);
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      setIsExporting(false);
+      setExported(true);
+    }, 2000);
+  };
+
+  const exportFormats = [
+    { id: 'pdf', name: 'PDF Report', icon: FileText, description: 'Professional document' },
+    { id: 'excel', name: 'Excel Model', icon: BarChart3, description: 'Interactive spreadsheet' },
+    { id: 'powerpoint', name: 'Presentation', icon: Sparkles, description: 'Investor pitch deck' }
   ];
 
   return (
-    <div className="h-80 flex items-center justify-center">
-      <div className="grid grid-cols-3 gap-8 items-center">
-        {/* Input Data */}
-        <div className="text-center">
-          <h4 className="text-sm font-medium mb-4">Raw Transactions</h4>
-          <div className="space-y-2">
-            {cleanData.map((row, index) => (
-              <div key={index} className="text-xs p-2 bg-muted/50 rounded border">
-                {row[0]}
+    <div className="space-y-6">
+      {/* Export Options */}
+      <div className="space-y-4">
+        <h4 className="font-medium">Choose Export Format</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {exportFormats.map((format) => {
+            const Icon = format.icon;
+            return (
+              <div
+                key={format.id}
+                className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                  selectedFormat === format.id 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-muted hover:border-muted-foreground/40'
+                }`}
+                onClick={() => setSelectedFormat(format.id)}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{format.name}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{format.description}</p>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* AI Pipeline */}
-        <div className="text-center">
-          <div className="bg-gradient-to-b from-primary to-primary/80 p-6 rounded-full mx-auto w-24 h-24 flex items-center justify-center mb-4">
-            <Sparkles className="w-8 h-8 text-white animate-spin" />
-          </div>
-          <p className="text-sm font-medium">AI Categorization</p>
-        </div>
-
-        {/* Output Categories */}
-        <div className={`transition-all duration-1000 ${showReports ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <h4 className="text-sm font-medium mb-4">Financial Reports</h4>
-          <div className="space-y-2">
-            {categories.map((cat, index) => (
-              <div key={index} className="flex items-center gap-2 p-2 bg-card border rounded">
-                <div className={`w-3 h-3 rounded-full ${cat.color}`} />
-                <span className="text-xs font-medium flex-1">{cat.name}</span>
-                <span className="text-xs font-mono">{cat.amount}</span>
-              </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
-    </div>
-  );
-};
 
-// Step 4: Forecasting & Simulation
-const ForecastingStep = ({ isActive, progress }: { isActive: boolean; progress: number }) => {
-  const [sliderValue, setSliderValue] = useState(20);
-  const [showGraphs, setShowGraphs] = useState(false);
-
-  useEffect(() => {
-    if (isActive && progress > 20) {
-      setShowGraphs(true);
-      const interval = setInterval(() => {
-        setSliderValue(prev => prev === 20 ? 40 : 20);
-      }, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [isActive, progress]);
-
-  return (
-    <div className="h-80 flex items-center justify-center">
-      <div className="w-full max-w-lg space-y-6">
-        {/* Graph Area */}
-        <div className={`bg-card border rounded-lg p-4 transition-all duration-1000 ${
-          showGraphs ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-        }`}>
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-sm font-medium">Cash Flow Projection</h4>
-            <TrendingUp className="w-4 h-4 text-green-500" />
-          </div>
-          
-          {/* Simulated Graph */}
-          <div className="h-32 bg-gradient-to-r from-green-100 to-blue-100 rounded relative overflow-hidden">
-            <div 
-              className="absolute bottom-0 left-0 bg-gradient-to-t from-green-500 to-green-300 transition-all duration-1000"
-              style={{ 
-                width: '100%', 
-                height: `${40 + sliderValue}%`,
-                clipPath: 'polygon(0% 100%, 10% 90%, 25% 85%, 40% 75%, 60% 65%, 80% 55%, 100% 45%, 100% 100%)'
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Interactive Slider */}
+      {/* Include Options */}
+      <div className="space-y-3">
+        <h4 className="font-medium">Include in Export</h4>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Rent Adjustment</span>
-            <Badge variant="outline">+{sliderValue}%</Badge>
-          </div>
-          <div className="bg-muted h-2 rounded-full overflow-hidden">
-            <div 
-              className="bg-primary h-full transition-all duration-1000"
-              style={{ width: `${sliderValue * 2.5}%` }}
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeCharts}
+              onChange={(e) => setIncludeCharts(e.target.checked)}
+              className="rounded"
             />
-          </div>
+            <span className="text-sm">Financial charts and graphs</span>
+          </label>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeProjections}
+              onChange={(e) => setIncludeProjections(e.target.checked)}
+              className="rounded"
+            />
+            <span className="text-sm">12-month projections and scenarios</span>
+          </label>
         </div>
       </div>
-    </div>
-  );
-};
 
-// Step 5: Export to Docs
-const ExportStep = ({ isActive, progress }: { isActive: boolean; progress: number }) => {
-  const [showDocument, setShowDocument] = useState(false);
-
-  useEffect(() => {
-    if (isActive && progress > 30) {
-      const timer = setTimeout(() => setShowDocument(true), 800);
-      return () => clearTimeout(timer);
-    }
-  }, [isActive, progress]);
-
-  return (
-    <div className="h-80 flex items-center justify-center">
-      <div className="text-center space-y-6">
-        <Button 
-          size="lg" 
-          className="animate-pulse"
-          disabled
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Generate Financial Model
-        </Button>
-
-        <div className={`transition-all duration-1000 ${
-          showDocument ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
-          <div className="bg-card border-2 border-primary shadow-lg rounded-lg p-6 max-w-sm mx-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <FileText className="w-5 h-5 text-primary" />
-              <span className="font-medium">Financial_Model_2024.pdf</span>
-            </div>
-            
-            <div className="space-y-3 text-left">
-              <div className="flex justify-between text-sm">
-                <span>Revenue Forecast</span>
-                <span className="font-mono">$127K</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Operating Expenses</span>
-                <span className="font-mono">$89K</span>
-              </div>
-              <div className="flex justify-between text-sm font-medium text-green-600">
-                <span>Net Profit</span>
-                <span className="font-mono">$38K</span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex gap-2">
-                <Badge variant="secondary" className="text-xs">P&L Statement</Badge>
-                <Badge variant="secondary" className="text-xs">Cash Flow</Badge>
-                <Badge variant="secondary" className="text-xs">Projections</Badge>
-              </div>
-            </div>
+      {/* Export Result */}
+      {exported && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <span className="font-medium text-green-800">Export Successful!</span>
           </div>
+          <p className="text-sm text-green-700">
+            Your financial model has been generated and is ready for download.
+          </p>
+          <Button size="sm" className="mt-3" variant="outline">
+            <Download className="w-4 h-4 mr-2" />
+            Download File
+          </Button>
         </div>
+      )}
+
+      {/* Navigation */}
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onPrevious}>
+          Back
+        </Button>
+        <Button 
+          onClick={handleExport}
+          disabled={isExporting}
+          className="min-w-32"
+        >
+          {isExporting ? (
+            <>
+              <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+              Exporting...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4 mr-2" />
+              Export Model
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );
@@ -330,99 +648,72 @@ const ExportStep = ({ isActive, progress }: { isActive: boolean; progress: numbe
 const demoSteps: DemoStep[] = [
   {
     id: 1,
-    title: 'Ingest Any Financial Data',
-    subtitle: 'Upload PDFs, Excel sheets, bank statements, and receipts',
-    duration: 4000,
+    title: 'Upload Financial Data',
+    subtitle: 'Drag and drop your PDFs, Excel sheets, and bank statements',
     component: UploadStep
   },
   {
     id: 2,
-    title: 'Clean & Normalize',
-    subtitle: 'AI standardizes inconsistent data formats automatically',
-    duration: 3500,
+    title: 'Clean & Normalize Data',
+    subtitle: 'Review and edit AI-cleaned financial data',
     component: CleaningStep
   },
   {
     id: 3,
-    title: 'Auto-Categorize into Reports',
-    subtitle: 'Generate P&L, Balance Sheet, and Cash Flow statements',
-    duration: 4000,
+    title: 'Categorize Transactions',
+    subtitle: 'Organize expenses into meaningful categories',
     component: CategorizationStep
   },
   {
     id: 4,
-    title: 'Forecast & Simulate Scenarios',
-    subtitle: 'Interactive "what-if" analysis with real-time updates',
-    duration: 4500,
+    title: 'Create Financial Forecasts',
+    subtitle: 'Adjust parameters and see real-time projections',
     component: ForecastingStep
   },
   {
     id: 5,
-    title: 'Generate Investor-Ready Financial Models',
-    subtitle: 'Export polished documents with projections and insights',
-    duration: 3000,
+    title: 'Export Financial Model',
+    subtitle: 'Download professional reports and presentations',
     component: ExportStep
   }
 ];
 
 export const ProductDemo = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + 2;
-        if (newProgress >= 100) {
-          setCurrentStep(current => {
-            const nextStep = (current + 1) % demoSteps.length;
-            return nextStep;
-          });
-          return 0;
-        }
-        return newProgress;
-      });
-    }, demoSteps[currentStep].duration / 50);
-
-    return () => clearInterval(interval);
-  }, [currentStep, isPlaying]);
-
-  const startDemo = () => {
-    setIsPlaying(true);
-    setCurrentStep(0);
-    setProgress(0);
+  const nextStep = () => {
+    if (currentStep < demoSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
   };
 
-  const pauseDemo = () => {
-    setIsPlaying(false);
+  const previousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const goToStep = (stepIndex: number) => {
     setCurrentStep(stepIndex);
-    setProgress(0);
-    setIsPlaying(false);
   };
 
   const CurrentStepComponent = demoSteps[currentStep].component;
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full max-w-5xl mx-auto">
       <CardContent className="p-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2">
-            From Raw Data to Financial Intelligence
+            Interactive Financial Intelligence Demo
           </h2>
           <p className="text-muted-foreground">
-            Watch BizMate AI transform unstructured financial data into investor-ready models
+            Experience how BizMate AI transforms your financial data into actionable insights
           </p>
         </div>
 
         {/* Progress Steps */}
-        <div className="flex justify-between mb-6">
+        <div className="flex justify-between mb-8">
           {demoSteps.map((step, index) => (
             <button
               key={step.id}
@@ -444,53 +735,27 @@ export const ProductDemo = () => {
               }`}>
                 {index < currentStep ? <CheckCircle className="w-4 h-4" /> : index + 1}
               </div>
-              <span className="text-xs font-medium text-center max-w-20">
-                Step {index + 1}
+              <span className="text-xs font-medium text-center max-w-24">
+                {step.title}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Progress Bar */}
+        {/* Current Step */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xl font-semibold">{demoSteps[currentStep].title}</h3>
-            <div className="flex gap-2">
-              {isPlaying ? (
-                <Button variant="outline" size="sm" onClick={pauseDemo}>
-                  <Pause className="w-4 h-4" />
-                </Button>
-              ) : (
-                <Button variant="outline" size="sm" onClick={startDemo}>
-                  <Play className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-          <p className="text-muted-foreground mb-4">{demoSteps[currentStep].subtitle}</p>
-          <Progress value={progress} className="h-2" />
+          <h3 className="text-2xl font-semibold mb-2">{demoSteps[currentStep].title}</h3>
+          <p className="text-muted-foreground">{demoSteps[currentStep].subtitle}</p>
         </div>
 
         {/* Demo Content */}
-        <div className="border rounded-lg">
-          <CurrentStepComponent isActive={true} progress={progress} />
-        </div>
-
-        {/* Controls */}
-        <div className="flex justify-center mt-6">
-          <Button onClick={startDemo} size="lg" className="min-w-32">
-            {isPlaying ? (
-              <>
-                <Pause className="w-4 h-4 mr-2" />
-                Pause Demo
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 mr-2" />
-                {progress > 0 ? 'Resume Demo' : 'Start Demo'}
-              </>
-            )}
-          </Button>
+        <div className="border rounded-lg p-6 min-h-96">
+          <CurrentStepComponent 
+            onNext={nextStep}
+            onPrevious={previousStep}
+            isFirst={currentStep === 0}
+            isLast={currentStep === demoSteps.length - 1}
+          />
         </div>
       </CardContent>
     </Card>
