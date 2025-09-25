@@ -2,7 +2,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, TrendingUp, FileText } from 'lucide-react';
+import { Building2, TrendingUp, FileText, Shield } from 'lucide-react';
 import { formatCurrency } from '@/utils/sensitivity';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useSensitivityMatrix } from '@/hooks/useSensitivityMatrix';
@@ -24,28 +24,40 @@ export const DashboardHeader = () => {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
-      {/* Business Info */}
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-          <Building2 className="w-6 h-6 text-primary" />
+    <div className="space-y-6 mb-6">
+      {/* Top Row: Business Info & CTAs */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        {/* Business Info */}
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Building2 className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">BizMate Analytics</h1>
+            <p className="text-sm text-muted-foreground">Profit Sensitivity Dashboard</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">BizMate Analytics</h1>
-          <p className="text-sm text-muted-foreground">Profit Sensitivity Dashboard</p>
+
+        {/* Action CTAs */}
+        <div className="flex items-center gap-3">
+          <Link to="/bizdocs">
+            <Button variant="outline" className="flex items-center gap-2 hover-scale">
+              <FileText className="w-4 h-4" />
+              Generate Documents
+            </Button>
+          </Link>
+          
+          <Link to="/failsafe">
+            <Button variant="default" className="flex items-center gap-2 hover-scale">
+              <Shield className="w-4 h-4" />
+              View AI Report
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Controls & KPI */}
+      {/* Bottom Row: Period Selector & Net Profit KPI */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        {/* BizDocs CTA */}
-        <Link to="/bizdocs">
-          <Button variant="outline" className="flex items-center gap-2 hover-scale">
-            <FileText className="w-4 h-4" />
-            Generate Documents
-          </Button>
-        </Link>
-
         {/* Period Selector */}
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-muted-foreground">Period</label>
