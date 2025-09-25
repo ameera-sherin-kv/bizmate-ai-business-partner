@@ -1,10 +1,12 @@
 // Dashboard header component
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, TrendingUp } from 'lucide-react';
+import { Building2, TrendingUp, FileText } from 'lucide-react';
 import { formatCurrency } from '@/utils/sensitivity';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useSensitivityMatrix } from '@/hooks/useSensitivityMatrix';
+import { Link } from 'react-router-dom';
 
 export const DashboardHeader = () => {
   const { period, setPeriod, baseData, inputs } = useDashboardStore();
@@ -36,6 +38,14 @@ export const DashboardHeader = () => {
 
       {/* Controls & KPI */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        {/* BizDocs CTA */}
+        <Link to="/bizdocs">
+          <Button variant="outline" className="flex items-center gap-2 hover-scale">
+            <FileText className="w-4 h-4" />
+            Generate Documents
+          </Button>
+        </Link>
+
         {/* Period Selector */}
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-muted-foreground">Period</label>
