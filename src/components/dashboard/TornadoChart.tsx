@@ -9,6 +9,13 @@ export const TornadoChart = () => {
   const { baseData, inputs } = useDashboardStore();
   const { tornado } = useSensitivityMatrix(baseData, inputs);
 
+  console.log('TornadoChart Debug:', {
+    baseData,
+    inputs,
+    tornado,
+    tornadoLength: tornado?.length
+  });
+
   // Transform data for tornado chart
   const chartData = tornado.map(item => ({
     driver: item.driver,
@@ -16,6 +23,8 @@ export const TornadoChart = () => {
     negative: Math.abs(item.negative), // Make positive for display
     impact: item.impact,
   }));
+
+  console.log('TornadoChart chartData:', chartData);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
