@@ -14,6 +14,8 @@ interface Message {
   isTyping?: boolean;
   options?: string[];
   suggestions?: { type: string; items: string[] };
+  multiSelect?: boolean;
+  selectedOptions?: string[];
 }
 
 interface BusinessPlan {
@@ -62,9 +64,9 @@ const conversationFlow = [
     field: "mission"
   },
   {
-    question: "What's your business model?",
-    type: "options",
-    options: ["D2C (Direct to Consumer)", "B2B (Business to Business)", "D2C + B2B (Both)", "Marketplace", "Subscription", "Franchise"],
+    question: "What's your business model? (Select all that apply)",
+    type: "multiselect",
+    options: ["D2C (Direct to Consumer)", "B2B (Business to Business)", "Marketplace", "Subscription", "Franchise", "Freemium"],
     field: "businessModel"
   },
   {
@@ -106,8 +108,8 @@ const conversationFlow = [
     field: "marketing"
   },
   {
-    question: "How will you handle sales?",
-    type: "options",
+    question: "How will you handle sales? (Select all that apply)",
+    type: "multiselect",
     options: ["Shopify store", "Amazon/Marketplaces", "Physical retail", "Direct sales", "Social commerce", "Wholesale partnerships"],
     field: "sales"
   },
@@ -170,6 +172,7 @@ const Discovery = () => {
   const [isStarted, setIsStarted] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [openAccordions, setOpenAccordions] = useState<string[]>([]);
+  const [selectedMultiOptions, setSelectedMultiOptions] = useState<string[]>([]);
   const [businessPlan, setBusinessPlan] = useState<BusinessPlan>({
     title: "",
     tagline: "",
@@ -212,7 +215,9 @@ const Discovery = () => {
           id: 2, 
           text: firstQuestion.question, 
           isAI: true,
-          options: firstQuestion.options
+          options: firstQuestion.options,
+          multiSelect: firstQuestion.type === "multiselect",
+          selectedOptions: []
         }]);
         setIsStarted(true);
       }, 1500);
@@ -279,8 +284,29 @@ const Discovery = () => {
   };
 
   const handleOptionSelect = (option: string) => {
-    setCurrentInput(option);
-    handleSubmit(null, option);
+    const currentQuestion = conversationFlow[currentQuestionIndex];
+    
+    if (currentQuestion.type === "multiselect") {
+      setSelectedMultiOptions(prev => {
+        if (prev.includes(option)) {
+          return prev.filter(item => item !== option);
+        } else {
+          return [...prev, option];
+        }
+      });
+    } else {
+      setCurrentInput(option);
+      handleSubmit(null, option);
+    }
+  };
+
+  const handleMultiSelectConfirm = () => {
+    if (selectedMultiOptions.length === 0) return;
+    
+    const selectedText = selectedMultiOptions.join(", ");
+    setCurrentInput(selectedText);
+    handleSubmit(null, selectedText);
+    setSelectedMultiOptions([]);
   };
 
   const handleSuggestionSelect = (suggestion: string, type: string) => {
@@ -305,12 +331,14 @@ const Discovery = () => {
       
       if (currentQuestionIndex < conversationFlow.length - 1) {
         const nextQuestionData = conversationFlow[currentQuestionIndex + 1];
-        const nextQuestion: Message = {
-          id: messages.length + 3,
-          text: nextQuestionData.question,
-          isAI: true,
-          options: nextQuestionData.options
-        };
+                const nextQuestion: Message = {
+                  id: messages.length + 3,
+                  text: nextQuestionData.question,
+                  isAI: true,
+                  options: nextQuestionData.options,
+                  multiSelect: nextQuestionData.type === "multiselect",
+                  selectedOptions: []
+                };
         setMessages(prev => [...prev, nextQuestion]);
         setCurrentQuestionIndex(prev => prev + 1);
       } else {
@@ -376,7 +404,9 @@ const Discovery = () => {
           id: messages.length + 3,
           text: nextQuestionData.question,
           isAI: true,
-          options: nextQuestionData.options
+          options: nextQuestionData.options,
+          multiSelect: nextQuestionData.type === "multiselect",
+          selectedOptions: []
         };
         setMessages(prev => [...prev, nextQuestion]);
         setCurrentQuestionIndex(prev => prev + 1);
@@ -497,18 +527,35 @@ const Discovery = () => {
 
                 {/* Options */}
                 {message.options && message.isAI && (
-                  <div className="flex flex-wrap gap-2 mt-3 ml-11">
-                    {message.options.map((option, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOptionSelect(option)}
-                        className="text-xs hover:bg-primary hover:text-primary-foreground"
-                      >
-                        {option}
-                      </Button>
-                    ))}
+                  <div className="mt-3 ml-11">
+                    <div className="flex flex-wrap gap-2">
+                      {message.options.map((option, index) => (
+                        <Button
+                          key={index}
+                          variant={message.multiSelect && selectedMultiOptions.includes(option) ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleOptionSelect(option)}
+                          className="text-xs hover:bg-primary hover:text-primary-foreground"
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                    {message.multiSelect && selectedMultiOptions.length > 0 && (
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          Selected: {selectedMultiOptions.join(", ")}
+                        </span>
+                        <Button
+                          variant="hero"
+                          size="sm"
+                          onClick={handleMultiSelectConfirm}
+                          className="text-xs"
+                        >
+                          Continue
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
 
