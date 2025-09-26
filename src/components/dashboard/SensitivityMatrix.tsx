@@ -9,8 +9,8 @@ export const SensitivityMatrix = () => {
   const { baseData, inputs } = useDashboardStore();
   const { matrix } = useSensitivityMatrix(baseData, inputs);
 
-  const salesChanges = [-20, -10, 0, 10, 20];
-  const priceChanges = [-10, -5, 0, 5, 10];
+  const changeValues = [-20, -10, 0, 10, 20];
+  const parameters = ['Sales Volume', 'Price', 'COGS%', 'Overheads', 'Tax Rate'];
 
   return (
     <Card>
@@ -26,11 +26,11 @@ export const SensitivityMatrix = () => {
             {/* Header row */}
             <div className="grid grid-cols-6 gap-1 mb-2">
               <div className="p-2 text-center font-medium text-sm text-muted-foreground">
-                Sales\Price
+                Parameter
               </div>
-              {priceChanges.map((priceChange) => (
-                <div key={priceChange} className="p-2 text-center font-medium text-sm text-muted-foreground">
-                  {formatPercentage(priceChange, 0)}
+              {changeValues.map((changeValue) => (
+                <div key={changeValue} className="p-2 text-center font-medium text-sm text-muted-foreground">
+                  {changeValue === 0 ? '0' : formatPercentage(changeValue, 0)}
                 </div>
               ))}
             </div>
@@ -38,8 +38,8 @@ export const SensitivityMatrix = () => {
             {/* Data rows */}
             {matrix.map((row, rowIndex) => (
               <div key={rowIndex} className="grid grid-cols-6 gap-1 mb-1">
-                <div className="p-2 text-center font-medium text-sm text-muted-foreground">
-                  {formatPercentage(salesChanges[rowIndex], 0)}
+                <div className="p-2 text-center font-medium text-sm text-muted-foreground min-w-[100px]">
+                  {parameters[rowIndex]}
                 </div>
                 {row.map((cell, colIndex) => (
                   <div
@@ -49,7 +49,7 @@ export const SensitivityMatrix = () => {
                       cell.color
                     )}
                   >
-                    {formatPercentage(cell.profitChange)}
+                    {changeValues[colIndex] === 0 ? '0' : formatPercentage(cell.profitChange)}
                   </div>
                 ))}
               </div>

@@ -40,27 +40,42 @@ export class SensitivityCalculator {
     };
   }
 
-  // Generate sensitivity matrix
+  // Generate sensitivity matrix with different parameters as rows
   generateSensitivityMatrix(baseInputs: ProfitInputs): SensitivityCell[][] {
-    const salesChanges = [-20, -10, 0, 10, 20];
-    const priceChanges = [-10, -5, 0, 5, 10];
+    const changeValues = [-20, -10, 0, 10, 20];
+    const parameters = [
+      { name: 'Sales Volume', key: 'salesVolumeChange' as keyof ProfitInputs },
+      { name: 'Price', key: 'priceChange' as keyof ProfitInputs },
+      { name: 'COGS%', key: 'cogsPercent' as keyof ProfitInputs, isReverse: true },
+      { name: 'Overheads', key: 'overheadsChange' as keyof ProfitInputs },
+      { name: 'Tax Rate', key: 'taxRate' as keyof ProfitInputs, isReverse: true },
+    ];
+    
     const matrix: SensitivityCell[][] = [];
+    const baseProfit = this.calculateProfit(baseInputs).netProfit;
 
-    for (const salesChange of salesChanges) {
+    for (const parameter of parameters) {
       const row: SensitivityCell[] = [];
-      for (const priceChange of priceChanges) {
-        const testInputs = {
-          ...baseInputs,
-          salesVolumeChange: salesChange,
-          priceChange: priceChange,
-        };
+      for (const changeValue of changeValues) {
+        const testInputs = { ...baseInputs };
+        
+        if (parameter.key === 'cogsPercent') {
+          // For COGS%, apply percentage point changes (not percentage changes)
+          testInputs[parameter.key] = Math.max(0, (testInputs[parameter.key] as number) + changeValue);
+        } else if (parameter.key === 'taxRate') {
+          // For tax rate, apply percentage point changes
+          testInputs[parameter.key] = Math.max(0, Math.min(100, (testInputs[parameter.key] as number) + changeValue));
+        } else {
+          // For volume, price, and overheads, apply percentage changes
+          testInputs[parameter.key] = (testInputs[parameter.key] as number) + changeValue;
+        }
         
         const result = this.calculateProfit(testInputs);
-        const profitChange = ((result.netProfit - this.baseData.netProfit) / this.baseData.netProfit) * 100;
+        const profitChange = changeValue === 0 ? 0 : ((result.netProfit - baseProfit) / baseProfit) * 100;
         
         row.push({
-          salesChange,
-          priceChange,
+          salesChange: changeValue, // Reusing this field for the parameter change
+          priceChange: 0, // Not used in new format
           profitChange,
           color: this.getProfitColor(profitChange),
         });
@@ -164,13 +179,13 @@ export class SensitivityCalculator {
   }
 
   private getProfitColor(profitChange: number): string {
-    if (profitChange >= 20) return 'bg-green-600';
-    if (profitChange >= 10) return 'bg-green-500';
-    if (profitChange >= 5) return 'bg-green-400';
-    if (profitChange >= -5) return 'bg-yellow-400';
-    if (profitChange >= -10) return 'bg-orange-400';
-    if (profitChange >= -20) return 'bg-red-400';
-    return 'bg-red-600';
+    if (profitChange >= 20) return 'bg-green-600/70';
+    if (profitChange >= 10) return 'bg-green-500/70';
+    if (profitChange >= 5) return 'bg-green-400/70';
+    if (profitChange >= -5) return 'bg-yellow-400/70';
+    if (profitChange >= -10) return 'bg-orange-400/70';
+    if (profitChange >= -20) return 'bg-red-400/70';
+    return 'bg-red-600/70';
   }
 }
 
