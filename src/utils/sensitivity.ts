@@ -179,13 +179,13 @@ export class SensitivityCalculator {
   }
 
   private getProfitColor(profitChange: number): string {
-    if (profitChange >= 20) return 'bg-green-600/70';
-    if (profitChange >= 10) return 'bg-green-500/70';
-    if (profitChange >= 5) return 'bg-green-400/70';
-    if (profitChange >= -5) return 'bg-yellow-400/70';
-    if (profitChange >= -10) return 'bg-orange-400/70';
-    if (profitChange >= -20) return 'bg-red-400/70';
-    return 'bg-red-600/70';
+    if (profitChange >= 20) return 'bg-emerald-700/80 border border-emerald-600/30';
+    if (profitChange >= 10) return 'bg-emerald-600/80 border border-emerald-500/30';
+    if (profitChange >= 5) return 'bg-emerald-500/80 border border-emerald-400/30';
+    if (profitChange >= -5) return 'bg-slate-500/80 border border-slate-400/30';
+    if (profitChange >= -10) return 'bg-amber-600/80 border border-amber-500/30';
+    if (profitChange >= -20) return 'bg-red-600/80 border border-red-500/30';
+    return 'bg-red-700/80 border border-red-600/30';
   }
 }
 

@@ -45,7 +45,7 @@ export const SensitivityMatrix = () => {
                   <div
                     key={colIndex}
                     className={cn(
-                      "p-3 text-center text-white text-sm font-medium rounded-md transition-all hover:scale-105",
+                      "p-3 text-center text-white text-sm font-medium rounded-sm transition-all hover:scale-[1.02] shadow-sm",
                       cell.color
                     )}
                   >
@@ -60,23 +60,27 @@ export const SensitivityMatrix = () => {
         {/* Legend */}
         <div className="mt-6 flex flex-wrap items-center gap-4 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-600 rounded"></div>
+            <div className="w-4 h-4 bg-emerald-700/80 border border-emerald-600/30 rounded-sm"></div>
             <span className="text-muted-foreground">&gt;20% increase</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-400 rounded"></div>
-            <span className="text-muted-foreground">5-20% increase</span>
+            <div className="w-4 h-4 bg-emerald-600/80 border border-emerald-500/30 rounded-sm"></div>
+            <span className="text-muted-foreground">10-20% increase</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+            <div className="w-4 h-4 bg-emerald-500/80 border border-emerald-400/30 rounded-sm"></div>
+            <span className="text-muted-foreground">5-10% increase</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-slate-500/80 border border-slate-400/30 rounded-sm"></div>
             <span className="text-muted-foreground">±5% change</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-orange-400 rounded"></div>
+            <div className="w-4 h-4 bg-amber-600/80 border border-amber-500/30 rounded-sm"></div>
             <span className="text-muted-foreground">5-20% decrease</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-600 rounded"></div>
+            <div className="w-4 h-4 bg-red-600/80 border border-red-500/30 rounded-sm"></div>
             <span className="text-muted-foreground">&gt;20% decrease</span>
           </div>
         </div>
