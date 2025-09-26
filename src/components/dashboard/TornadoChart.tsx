@@ -16,15 +16,16 @@ export const TornadoChart = () => {
     tornadoLength: tornado?.length
   });
 
-  // Transform data for tornado chart
+  // Transform data for tornado chart - proper tornado format
   const chartData = tornado.map(item => ({
     driver: item.driver,
     positive: item.positive,
-    negative: Math.abs(item.negative), // Make positive for display
+    negative: -Math.abs(item.negative), // Keep negative for proper tornado display
     impact: item.impact,
   }));
 
   console.log('TornadoChart chartData:', chartData);
+  console.log('Tornado raw data:', tornado);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -69,8 +70,9 @@ export const TornadoChart = () => {
               <XAxis 
                 type="number"
                 tick={{ fontSize: 12 }}
-                tickFormatter={(value) => formatPercentage(value, 0)}
+                tickFormatter={(value) => formatPercentage(Math.abs(value), 0)}
                 domain={['dataMin', 'dataMax']}
+                axisLine={false}
               />
               <YAxis 
                 type="category"
@@ -80,14 +82,14 @@ export const TornadoChart = () => {
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar 
-                dataKey="positive" 
-                fill="hsl(var(--primary))"
-                radius={[0, 2, 2, 0]}
-              />
-              <Bar 
                 dataKey="negative" 
                 fill="hsl(var(--destructive))"
                 radius={[2, 0, 0, 2]}
+              />
+              <Bar 
+                dataKey="positive" 
+                fill="hsl(var(--primary))"
+                radius={[0, 2, 2, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
