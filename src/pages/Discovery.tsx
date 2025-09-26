@@ -68,8 +68,8 @@ const conversationFlow = [
     field: "businessModel"
   },
   {
-    question: "Now I can suggest a tagline! Based on your vision and mission, what resonates with you?",
-    type: "suggestions",
+    question: "", // This will be dynamically generated
+    type: "tagline-suggestions",
     field: "tagline"
   },
   {
@@ -291,7 +291,43 @@ const Discovery = () => {
       ...prev,
       [type]: suggestion
     }));
-    setShowSuggestions(false);
+    
+    // Auto-expand relevant sections
+    const sectionToExpand = planSections.find(section => 
+      section.fields.includes(type)
+    );
+    if (sectionToExpand && !openAccordions.includes(sectionToExpand.id)) {
+      setOpenAccordions(prev => [...prev, sectionToExpand.id]);
+    }
+
+    // Show typing indicator and proceed to next question
+    const typingId = addTypingMessage();
+    
+    setTimeout(() => {
+      removeTypingMessage(typingId);
+      
+      if (currentQuestionIndex < conversationFlow.length - 1) {
+        const nextQuestionData = conversationFlow[currentQuestionIndex + 1];
+        const nextQuestion: Message = {
+          id: messages.length + 3,
+          text: nextQuestionData.question,
+          isAI: true,
+          options: nextQuestionData.options
+        };
+        setMessages(prev => [...prev, nextQuestion]);
+        setCurrentQuestionIndex(prev => prev + 1);
+      } else {
+        // All questions answered - show summary
+        const summaryText = "Excellent! I've created a comprehensive business plan based on our conversation. You can review and edit it on the right, then export it or proceed to evaluation.";
+        
+        const finalMessage: Message = {
+          id: messages.length + 3,
+          text: summaryText,
+          isAI: true,
+        };
+        setMessages(prev => [...prev, finalMessage]);
+      }
+    }, 1500);
   };
 
   const handleSubmit = (e?: React.FormEvent | null, optionValue?: string) => {
@@ -323,30 +359,18 @@ const Discovery = () => {
       if (currentQuestionIndex < conversationFlow.length - 1) {
         const nextQuestionData = conversationFlow[currentQuestionIndex + 1];
         
-        // Check if we should show suggestions for tagline
+        // Check if we should show tagline suggestions
         if (nextQuestionData.field === "tagline") {
           const suggestions = generateSuggestions(inputValue, currentQuestionIndex + 1, businessPlan);
           if (suggestions) {
             const suggestionMessage: Message = {
               id: messages.length + 3,
-              text: "Based on your vision and mission, here are some tagline suggestions:",
+              text: "Based on your vision and mission, here are some tagline suggestions. Please select one:",
               isAI: true,
-              suggestions: { type: "taglines", items: suggestions.taglines }
+              suggestions: { type: "tagline", items: suggestions.taglines }
             };
             setMessages(prev => [...prev, suggestionMessage]);
-            setShowSuggestions(true);
-            
-            // Then ask next question
-            setTimeout(() => {
-              const nextQuestion: Message = {
-                id: messages.length + 4,
-                text: nextQuestionData.question,
-                isAI: true,
-                options: nextQuestionData.options
-              };
-              setMessages(prev => [...prev, nextQuestion]);
-              setCurrentQuestionIndex(prev => prev + 1);
-            }, 2000);
+            setCurrentQuestionIndex(prev => prev + 1);
             return;
           }
         }
@@ -494,14 +518,13 @@ const Discovery = () => {
                 {/* Suggestions */}
                 {message.suggestions && message.isAI && (
                   <div className="mt-3 ml-11 space-y-2">
-                    <p className="text-sm text-muted-foreground">Tagline suggestions:</p>
                     <div className="flex flex-wrap gap-2">
                       {message.suggestions.items.map((suggestion, index) => (
                         <Button
                           key={index}
                           variant="secondary"
                           size="sm"
-                          onClick={() => handleSuggestionSelect(suggestion, "tagline")}
+                          onClick={() => handleSuggestionSelect(suggestion, message.suggestions?.type || "tagline")}
                           className="text-xs"
                         >
                           {suggestion}
