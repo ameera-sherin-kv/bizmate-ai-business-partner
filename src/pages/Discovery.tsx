@@ -79,7 +79,8 @@ const conversationFlow = [
   },
   {
     question: "What's your pricing strategy?",
-    type: "text",
+    type: "options",
+    options: ["Cost-plus pricing", "Competitive pricing", "Value-based pricing", "Penetration pricing", "Premium pricing", "Dynamic pricing"],
     field: "pricing"
   },
   {
