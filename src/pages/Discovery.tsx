@@ -132,11 +132,7 @@ const conversationFlow = [
     type: "text",
     field: "logistics"
   },
-  {
-    question: "What's your tech stack?",
-    type: "text",
-    field: "techStack"
-  },
+
   {
     question: "What are your estimated startup costs?",
     type: "options",
