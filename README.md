@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# BizMate
 
-## Project info
+BizMate is an AI-powered virtual co-founder that helps small business owners with end-to-end business management — from product strategy to marketing, financial planning, and beyond.  
 
-**URL**: https://lovable.dev/projects/85f5db74-29e5-4c34-a5c6-2578e882c83f
+---
 
-## How can I edit this code?
+## 🚀 Getting Started
 
-There are several ways of editing your application.
+Follow these steps to set up and run the project locally:
 
-**Use Lovable**
+### Step 1: Clone the Repository
+```bash
+git clone git@github.com:ameera-sherin-kv/bizmate-ai-business-partner.git
+```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/85f5db74-29e5-4c34-a5c6-2578e882c83f) and start prompting.
+### Step 2: Navigate to the Project Directory
+```bash
+cd bizmate-ai-business-partner
+```
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+### Step 3: Install Dependencies
+```bash
 npm i
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Step 4: Run the Development Server
+Start the server with auto-reloading and instant preview:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Tech Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+-Frontend: React + Vite 
+-Styling: TailwindCSS
+-Backend: Node.js / Express (if included)
+-AI Integration: OpenAI APIs (custom pipelines for insights, planning, and execution)
 
-**Use GitHub Codespaces**
+### Project Structure
+```bash
+/src
+  /components   # Reusable UI components
+  /pages        # Main screens/routes
+  /services     # API calls and integrations
+  /utils        # Helper functions
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Features
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/85f5db74-29e5-4c34-a5c6-2578e882c83f) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Personalized AI Business Co-founder
+End-to-end Business Planning & Execution support
+ROI-focused tools to save time & costs for founders
+Subscription-based SaaS model with scalable architecture
